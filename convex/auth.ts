@@ -6,7 +6,7 @@ import { DataModel } from "./_generated/dataModel"
 
 const CustomPassword = Password<DataModel>({                    // Creamos un provider de password personalizado
   profile(params){                                              // El profile recibe los params que se pasan al signIn
-    return {                                                    // Devolvemos un objeto con el nombre y email del usuario
+    return {                                                    // y solo devolvemos un objeto con el nombre y email del usuario para grabar en la tabla de users
       email: params.email as string,
       name: params.name as string,
     }
