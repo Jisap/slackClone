@@ -19,7 +19,7 @@ interface SignInCardProps {
 
 export const SignInCard = ({ setState }: SignInCardProps) => {
 
-  const { signIn } = useAuthActions();
+  const { signIn } = useAuthActions();            // hook de convex-auth para realizar el login
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
@@ -43,6 +43,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
           Use your email or another service to continue
         </CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-5 px-0 pb-0">
         <form className="space-y-2.5">
           <Input 
@@ -70,7 +71,9 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             Continue
           </Button>
         </form>
+
         <Separator />
+
         <div className="flex flex-col gap-y-2.5">
           <Button
             disabled={pending}

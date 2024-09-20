@@ -9,7 +9,7 @@ import { SignUpCard } from "./sign-up-card";
 
 export const AuthScreen = () => {
 
-  const [state, setState] = useState<SignInFlow>("signIn");
+  const [state, setState] = useState<SignInFlow>("signIn");  // Estado que controla el flujo de la pantalla de autenticación
 
   return (
     <div className="h-full flex items-center justify-center bg-[#5C3B58]">

@@ -71,7 +71,9 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             Continue
           </Button>
         </form>
+
         <Separator />
+        
         <div className="flex flex-col gap-y-2.5">
           <Button
             disabled={false}

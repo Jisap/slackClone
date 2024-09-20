@@ -3,5 +3,5 @@ import GitHub from "@auth/core/providers/github";
 import Google from "@auth/core/providers/google";
 
 export const { auth, signIn, signOut, store } = convexAuth({
-  providers: [GitHub, Google],
+  providers: [GitHub, Google], // Las envs de los providers están almacenadas en convex 
 });
