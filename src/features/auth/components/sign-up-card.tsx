@@ -26,6 +26,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 
   const { signIn } = useAuthActions();                                    // hook de convex-auth devuelve un método singIn tanto login como para registro
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -39,7 +40,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
       return
     }
     setPending(true);
-    signIn("password",  { email, password, flow: "signUp" })              // signUp con credenciales, el flow indica que se va a realizar el login
+    signIn("password", { name, email, password, flow: "signUp" })              // signUp con credenciales, el flow indica que se va a realizar el login
       .catch(() => {
         setError("Something went wrong")
       })
@@ -79,6 +80,13 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
           onSubmit={onPasswordSignUp}
           className="space-y-2.5" 
         >
+          <Input
+            disabled={pending}
+            value={name}
+            onChange={(e) => { setName(e.target.value) }}
+            placeholder="Full name"
+            required
+          />
           <Input
             disabled={pending}
             value={email}
