@@ -20,7 +20,6 @@ export default function Home() {
     if(isLoading) return 
     
     if(workspaceId) {
-      console.log("Redirect to workspace");
       router.replace(`/workspace/${workspaceId}`);
     }else if (!open){
       console.log("Open creation modal");
