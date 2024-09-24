@@ -1,4 +1,5 @@
-import WorkSpaceIdPage from './page';
+"use client"
+
 import {Toolbar } from './toolbar';
 
 

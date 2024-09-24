@@ -1,8 +1,14 @@
 import { Button } from "@/components/ui/button"
+import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
+import { useWorkspaceId } from "@/hooks/use-workspace-id"
 import { Info, Search } from "lucide-react"
+import { use } from "react";
 
 
 export const Toolbar = () => {
+
+  const workspaceId = useWorkspaceId();                     // Obtenemos el id del workspace contenido en los params
+  const { data } = useGetWorkspace({ id: workspaceId });          // Llamamos al hook useGetWorkspace para obtener los datos de uno de los registros de la tabla workspaces
   return (
     <div className="bg-[#481349] flex items-center justify-between h-10 p-1.5">
       <div className="flex-1" />
@@ -12,7 +18,9 @@ export const Toolbar = () => {
           className="bg-accent/25 hover:bg-accent/10 w-full justify-start h-7 px-2"
         >
           <Search className="size-4 text-white mr-2" />
-          <span className="text-white text-xs">Search workspace</span>
+          <span className="text-white text-xs">
+            Search {data?.name}
+          </span>
         </Button>
       </div>
       <div className="ml-auto flex-1 flex items-center justify-end">
