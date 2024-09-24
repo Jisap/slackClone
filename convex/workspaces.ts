@@ -23,7 +23,7 @@ export const create = mutation({                                // Mutación par
     });
 
 
-    return workspaceId;                                        // Devolvemos el id del workspace
+    return workspaceId;                                         // Devolvemos el id del workspace que nos da convex
   }
 })
 
@@ -31,5 +31,19 @@ export const get = query({
   args: {},
   handler: async( ctx ) => {
     return await ctx.db.query("workspaces").collect();  // Obtiene los datos de la tabla workspaces
+  }
+});
+
+export const getById = query({
+  args: {
+    id: v.id("workspaces")
+  },
+  handler: async(ctx, args) => {
+    const userId = await getAuthUserId(ctx)                     // Comprobamos si el usuario está autenticado
+    if(!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    return ctx.db.get(args.id);                                // Obtenemos el workspace con ese id
   }
 })
