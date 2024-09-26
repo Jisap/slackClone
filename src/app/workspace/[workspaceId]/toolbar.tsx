@@ -7,7 +7,7 @@ import { use } from "react";
 
 export const Toolbar = () => {
 
-  const workspaceId = useWorkspaceId();                     // Obtenemos el id del workspace contenido en los params
+  const workspaceId = useWorkspaceId();                           // Obtenemos el id del workspace contenido en los params
   const { data } = useGetWorkspace({ id: workspaceId });          // Llamamos al hook useGetWorkspace para obtener los datos de uno de los registros de la tabla workspaces
   return (
     <div className="bg-[#481349] flex items-center justify-between h-10 p-1.5">

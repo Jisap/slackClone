@@ -38,7 +38,7 @@ const CreateWorkspaceModal = () => {
     mutate({ name }, {
       onSuccess(data) {
         toast.success("Workspace created successfully")
-        router.push(`/workspace/${data}`) // Se redirige al workspace creado
+        router.push(`/workspace/${data}`)                               // Se redirige al workspace creado
         handleClose()
       }
     })
@@ -46,7 +46,7 @@ const CreateWorkspaceModal = () => {
 
   return (
     <Dialog 
-      open={open}                   // Cuando el estado global de creación de workspaces es true, se muestra el modal
+      open={open}                                                       // Cuando el estado global de creación de workspaces es true, se muestra el modal
       onOpenChange={handleClose}
     >
       <DialogContent>
