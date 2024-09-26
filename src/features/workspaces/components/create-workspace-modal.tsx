@@ -30,15 +30,15 @@ const CreateWorkspaceModal = () => {
     setName("")
   }
 
-  const  { mutate, isPending, isSuccess, isError, isSettled, data, error } = useCreateWorkspace(); // data es el id del workspace creado
+  const  { mutate, isPending, isSuccess, isError, isSettled, data, error } = useCreateWorkspace(); // Hook para la creación de un workspace (data es el id del workspace creado)
   
-  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {  // Cuando se hace submit en el formulario, se ejecuta el método mutate(name) -> data y demas props
     e.preventDefault();
     
     mutate({ name }, {
       onSuccess(data) {
         toast.success("Workspace created successfully")
-        router.push(`/workspace/${data}`)
+        router.push(`/workspace/${data}`) // Se redirige al workspace creado
         handleClose()
       }
     })
@@ -46,7 +46,7 @@ const CreateWorkspaceModal = () => {
 
   return (
     <Dialog 
-      open={open} 
+      open={open}                   // Cuando el estado global de creación de workspaces es true, se muestra el modal
       onOpenChange={handleClose}
     >
       <DialogContent>

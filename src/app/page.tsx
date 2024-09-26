@@ -12,7 +12,7 @@ import { useEffect, useMemo } from "react";
 export default function Home() {
 
   const router = useRouter();
-  const [open, setOpen] = useCreateWorkspacesModal();         // Estado global del modal de creación de workspaces
+  const [open, setOpen] = useCreateWorkspacesModal();         // Estado global del modal de creación de workspaces con atom
   const { data, isLoading } = useGetWorkspaces();             // Llamamos al hook useGetWorkspaces para obtener los datos de la tabla workspaces
   const workspaceId = useMemo(() => data?.[0]?._id, [data]);  // Obtenemos el id del workspace actual
 

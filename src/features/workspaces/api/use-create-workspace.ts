@@ -15,7 +15,7 @@ type Options = {                                  // Tipado de la funciones que 
 }
 
 
-export const useCreateWorkspace = () => {
+export const useCreateWorkspace = () => { // Hook para crear un workspace
 
   const [data, setData] = useState<ResponseType>(null);
   const [error, setError] = useState<Error | null>(null);
