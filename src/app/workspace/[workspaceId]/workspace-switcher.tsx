@@ -24,11 +24,11 @@ import { useRouter } from "next/navigation";
 export const WorkspaceSwitcher = () => {
 
   const router = useRouter();
-  const workspaceId = useWorkspaceId();                               // Obtenemos el id del workspace contenido en los params
+  const workspaceId = useWorkspaceId();                              // Obtenemos el id del workspace contenido en los params
   const { 
     data: workspace,
     isLoading: workspaceLoading
-  } = useGetWorkspace({ id: workspaceId });                           // Llamamos al hook useGetWorkspace para obtener los datos de uno de los registros de la tabla workspaces
+  } = useGetWorkspace({ id: workspaceId });                          // Llamamos al hook useGetWorkspace para obtener los datos ese workspace activo
   const { 
     data: workspaces,
     isLoading: workspacesLoading
@@ -37,7 +37,7 @@ export const WorkspaceSwitcher = () => {
   const filteredWorkspaces = workspaces?.filter(
     (w) => w._id !== workspaceId);                                   // Filtramos los workspaces que no son el actual
 
-  const [_open, setOpen] = useCreateWorkspacesModal();                             // Estado global del modal de creación de workspaces con atom
+  const [_open, setOpen] = useCreateWorkspacesModal();               // Estado global del modal de creación de workspaces con atom
 
   return (
     <DropdownMenu>
