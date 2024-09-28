@@ -2,6 +2,14 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from '@convex-dev/auth/server';
 
+const generateCode = () => {
+  const code = Array.from(
+    { length: 6 },
+    () => "0123456789abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)]
+  ).join("");
+
+  return code;
+}
 
 export const create = mutation({                                // Mutación para la creación de un workspace
   args:{
@@ -14,7 +22,7 @@ export const create = mutation({                                // Mutación par
       throw new Error("Unauthorized");
     }
 
-    const joinCode = "123456"; // TODO: Crear un metodo 
+    const joinCode = generateCode();                            // Generamos un codigo aleatorio para el workspace
 
     const workspaceId = await ctx.db.insert("workspaces", {     // Insertamos el workspace en la tabla de workspaces
       name: args.name,
