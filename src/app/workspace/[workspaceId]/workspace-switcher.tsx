@@ -25,17 +25,19 @@ export const WorkspaceSwitcher = () => {
 
   const router = useRouter();
   const workspaceId = useWorkspaceId();                              // Obtenemos el id del workspace contenido en los params
+  
   const { 
     data: workspace,
     isLoading: workspaceLoading
-  } = useGetWorkspace({ id: workspaceId });                          // Llamamos al hook useGetWorkspace para obtener los datos ese workspace activo
+  } = useGetWorkspace({ id: workspaceId });                          // Llamamos al hook useGetWorkspace para obtener los datos ese workspace activo perteneciente al usuario logueado
+  
   const { 
     data: workspaces,
     isLoading: workspacesLoading
-  } = useGetWorkspaces();                                            // Llamamos al hook useGetWorkspaces para obtener los datos de la tabla workspaces
+  } = useGetWorkspaces();                                            // Llamamos al hook useGetWorkspaces para obtener los datos de la tabla workspaces pertenecientes al usuario logueado
 
   const filteredWorkspaces = workspaces?.filter(
-    (w) => w._id !== workspaceId);                                   // Filtramos los workspaces que no son el actual
+    (w) => w._id !== workspaceId);                                   // Filtramos los workspaces que no son el actual (actual = esta en los params)
 
   const [_open, setOpen] = useCreateWorkspacesModal();               // Estado global del modal de creación de workspaces con atom
 
