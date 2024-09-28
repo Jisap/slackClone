@@ -22,7 +22,7 @@ export const create = mutation({                                // Mutación par
       joinCode,
     });
 
-    await ctx.db.insert("members", {                           // Insertamos el miembro del workspace en la tabla de members
+    await ctx.db.insert("members", {                           // Insertamos el miembro (susuario logueado) del workspace en la tabla de members
       userId,
       workspaceId,
       role: "admin",
@@ -36,7 +36,28 @@ export const create = mutation({                                // Mutación par
 export const get = query({
   args: {},
   handler: async( ctx ) => {
-    return await ctx.db.query("workspaces").collect();  // Obtiene los datos de la tabla workspaces
+
+    const userId = await getAuthUserId(ctx)                     // Comprobamos si el usuario está autenticado
+    if(!userId) {
+      return [];
+    }
+    const members = await ctx.db                                // Devuelve un array de registros, donde cada registro  
+      .query("members")                                         // indica un workspace al que pertenece el usuario.
+      .withIndex("by_user_id", (q) => q.eq("userId", userId))   
+      .collect();
+
+    const workspaceIds = members.map((member) => member.workspaceId);  // Se utiliza este array para extraer todos los workspaceId asociados al usuario.
+
+    const workspaces = []
+
+    for (const workspaceId of workspaceIds) {
+      const workspace = await ctx.db.get(workspaceId);  // Para cada workspaceId del array, se busca el workspace correspondiente en la base de datos
+      if(workspace){
+        workspaces.push(workspace);                     //  Si el workspace existe, se añade al array workspaces.
+      }
+    }
+
+    return workspaces
   }
 });
 
