@@ -63,7 +63,7 @@ export const get = query({
 
 export const getById = query({
   args: {
-    id: v.id("workspaces")
+    id: v.id("workspaces")                                      // Recibe el id del workspace
   },
   handler: async(ctx, args) => {
     const userId = await getAuthUserId(ctx)                     // Comprobamos si el usuario está autenticado
@@ -71,6 +71,17 @@ export const getById = query({
       throw new Error("Unauthorized");
     }
 
-    return ctx.db.get(args.id);                                // Obtenemos el workspace con ese id
+    // Se busca si el usuario autenticado es miembro del workspace cuyo ID se ha proporcionado en los argumentos.
+    const member = await ctx.db
+      .query("members")                                             // Consulta a la tabla de members
+      .withIndex("by_workspace_id_user_id",                         // con un índice de combinaciónes de workspaceId y userId
+         (q) => q.eq("workspaceId", args.id).eq("userId", userId))  // donde el workspaceId=args.is y el userId=userId
+      .unique()                                                      
+
+    if (!member) {                                                  // Si no es miembro, el valor de member será null.
+      return null
+    }
+
+    return ctx.db.get(args.id);                                     // Si el usuario es miembro, se devuelve el workspace correspondiente.
   }
 })
