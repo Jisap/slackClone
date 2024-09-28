@@ -22,6 +22,12 @@ export const create = mutation({                                // Mutación par
       joinCode,
     });
 
+    await ctx.db.insert("members", {                           // Insertamos el miembro del workspace en la tabla de members
+      userId,
+      workspaceId,
+      role: "admin",
+    });
+
 
     return workspaceId;                                         // Devolvemos el id del workspace que nos da convex
   }
