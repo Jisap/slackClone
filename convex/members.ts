@@ -17,7 +17,7 @@ export const current = query({
       .query("members")                                                      // Consulta a la tabla de members
       .withIndex("by_workspace_id_user_id",                                  // con un índice de combinaciónes de workspaceId y userId
          (q) => q.eq("workspaceId", args.workspaceId).eq("userId", userId))  // donde el workspaceId=args.id y el userId=userId
-      .collect()
+      .unique()
 
       if(!member){
         return null;
