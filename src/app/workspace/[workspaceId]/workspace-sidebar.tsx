@@ -2,6 +2,7 @@ import { useCurrentMember } from "@/features/members/api/use-current-member";
 import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { AlertTriangle, Loader } from "lucide-react";
+import { WorkspaceHeader } from "./workspaceHeader";
 
 
 
@@ -35,6 +36,8 @@ export const WorkspaceSidebar = () => {
   }
 
   return (
-    <div>Workspace sidebar</div>
+    <div className="flex flex-col bg-[#5E2C5F] h-full">
+      <WorkspaceHeader workspace={workspace} />
+    </div>
   )
 }
