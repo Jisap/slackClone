@@ -45,12 +45,12 @@ export const get = query({
   args: {},
   handler: async( ctx ) => {
 
-    const userId = await getAuthUserId(ctx)                     // Comprobamos si el usuario está autenticado
+    const userId = await getAuthUserId(ctx)                            // Comprobamos si el usuario está autenticado
     if(!userId) {
       return [];
     }
-    const members = await ctx.db                                // Devuelve un array de registros, donde cada registro  
-      .query("members")                                         // indica un workspace al que pertenece el usuario.
+    const members = await ctx.db                                       // Devuelve un array de registros, donde cada registro  
+      .query("members")                                                // indica un workspace al que pertenece el usuario.
       .withIndex("by_user_id", (q) => q.eq("userId", userId))   
       .collect();
 
@@ -65,8 +65,8 @@ export const get = query({
       }
     }
 
-    return workspaces
-  }
+    return workspaces                                   // Devuelve el array de workspaces que pertenecen al usuario.
+  } 
 });
 
 export const getById = query({
@@ -83,7 +83,7 @@ export const getById = query({
     const member = await ctx.db
       .query("members")                                             // Consulta a la tabla de members
       .withIndex("by_workspace_id_user_id",                         // con un índice de combinaciónes de workspaceId y userId
-         (q) => q.eq("workspaceId", args.id).eq("userId", userId))  // donde el workspaceId=args.is y el userId=userId
+         (q) => q.eq("workspaceId", args.id).eq("userId", userId))  // donde el workspaceId=args.id y el userId=userId
       .unique()                                                      
 
     if (!member) {                                                  // Si no es miembro, el valor de member será null.
