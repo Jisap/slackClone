@@ -92,4 +92,34 @@ export const getById = query({
 
     return ctx.db.get(args.id);                                     // Si el usuario es miembro, se devuelve el workspace correspondiente.
   }
+});
+
+
+export const update = mutation({
+  args: {
+    id: v.id("workspaces"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)                     // Comprobamos si el usuario está autenticado
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    // Se busca si el usuario autenticado es miembro del workspace cuyo ID se ha proporcionado en los argumentos.
+    const member = await ctx.db
+      .query("members")                                             // Consulta a la tabla de members
+      .withIndex("by_workspace_id_user_id",                         // con un índice de combinaciónes de workspaceId y userId
+        (q) => q.eq("workspaceId", args.id).eq("userId", userId))   // donde el workspaceId=args.id y el userId=userId
+      .unique();
+      
+    if(!member || member.role !== "admin") {                        // Si no es miembro, el valor de member será null.
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.id, { name: args.name });               // Si el usuario es miembro, se actualiza el nombre del workspace.
+  
+    return args.id;                                                 // Devuelve el id del workspace que se ha actualizado.
+  }
 })
+    

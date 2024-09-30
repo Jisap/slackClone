@@ -43,6 +43,7 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
               {value}
             </p>
           </div>
+          
           <button
             disabled={false}
             onClick={() => {}}

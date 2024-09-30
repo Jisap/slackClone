@@ -4,10 +4,10 @@ import { useCallback, useMemo, useState } from "react"
 import { Doc, Id } from "../../../../convex/_generated/dataModel";
 
 
-type RequestType = { name: string };              // Tipado de los argumentos de la mutation de convex
-type ResponseType = Id<"workspaces"> | null;      // Tipado de respuesta esperado (un ID de workspace o null).
+type RequestType = { id: Id<"workspaces">,name: string };   // Tipado de los argumentos de la mutation de convex
+type ResponseType = Id<"workspaces"> | null;                // Tipado de respuesta esperado (un ID de workspace o null).
 
-type Options = {                                  // Tipado de la funciones que se pueden pasar tras ejecutar la mutación, definidas en el modal
+type Options = {                                            // Tipado de la funciones que se pueden pasar tras ejecutar la mutación, definidas en el modal
   onSuccess?: (data: ResponseType) => void;
   onError?: (error: Error) => void;
   onSettled?: () => void;
@@ -15,7 +15,7 @@ type Options = {                                  // Tipado de la funciones que 
 }
 
 
-export const useCreateWorkspace = () => { // Hook para crear un workspace
+export const useUpdateWorkspace = () => { // Hook para actualizar un workspace
 
   const [data, setData] = useState<ResponseType>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -27,7 +27,7 @@ export const useCreateWorkspace = () => { // Hook para crear un workspace
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const mutation = useMutation(api.workspaces.create) // Definición de la mutation de la api de convex para crear un workspace
+  const mutation = useMutation(api.workspaces.update) // Definición de la mutation de la api de convex para actualizar un workspace
 
   const mutate = useCallback(async(values:RequestType, options?: Options) => { // Ejecución de la mutation -> callbacks
     try {
@@ -36,7 +36,7 @@ export const useCreateWorkspace = () => { // Hook para crear un workspace
       setError(null);
       setStatus("pending")                           
       
-      const response = await mutation(values);       // Cuando se usa la mutation en el modal, se pasa el nombre del workspace
+      const response = await mutation(values);       // Cuando se usa la mutation en el modal, se pasa el nombre del workspace y su id
       options?.onSuccess?.(response)                 // Si se obtuvo una respuesta, se ejecuta la función de onSuccess definida en el modal con dicha respuesta
       return response
       
