@@ -14,6 +14,7 @@ import { useRemoveWorkspace } from "@/features/workspaces/api/use-remove-workspa
 import { useUpdateWorkspace } from "@/features/workspaces/api/use-update-workspace";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { TrashIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { use, useState } from "react";
 import { toast } from "sonner";
 
@@ -26,6 +27,7 @@ interface PreferencesModalProps {
 
 export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesModalProps) => {
   
+  const router = useRouter()
   const workspaceId = useWorkspaceId();
   const [value, setValue] = useState(initialValue); // Estado para el nombre del workspace
   const [editOpen, setEditOpen] = useState(false);
@@ -35,7 +37,7 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
 
   const handleEdit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    updateWorkspace({ id: workspaceId, name: value }),
+    updateWorkspace({ id: workspaceId, name: value },
     {
       onSuccess: () => {
         toast.success("Workspace name updated");
@@ -44,7 +46,21 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
       onError: () => {
         toast.error("failed to update workspace name");
       }
-    }
+    })
+  }
+
+  const handleRemove = () => {
+    removeWorkspace({ id: workspaceId },
+    {
+      onSuccess: () => {
+        toast.success("Workspace deleted");
+        router.replace("/");
+        
+      },
+      onError: () => {
+        toast.error("failed to delete workspace");
+      }
+    })
   }
 
   return (
@@ -62,6 +78,7 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
             open={editOpen} 
             onOpenChange={setEditOpen}
           >
+            {/* Nombre actual y btn edit -> modal rename */}
             <DialogTrigger asChild>
               <div className="px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50">
                 <div className="flex items-center justify-between">
@@ -115,8 +132,8 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
 
 
           <button
-            disabled={false}
-            onClick={() => {}}
+            disabled={isRemovingWorkspace}
+            onClick={handleRemove}
             className="flex items-center gap-x-2 px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50 text-rose-600"
           >
             <TrashIcon className="size-4"/>
