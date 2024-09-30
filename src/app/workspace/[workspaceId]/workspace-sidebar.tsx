@@ -12,7 +12,7 @@ export const WorkspaceSidebar = () => {
   const { 
     data: member, 
     isLoading: memberIsLoading 
-  } = useCurrentMember({ workspaceId });                     // Nos permite saber si el workspace pertenece al usuario logueado
+  } = useCurrentMember({ workspaceId });                     // Nos permite saber si el usuario logueado pertenece/es miembro al workspace 
   const {
     data: workspace,
     isLoading: workspaceIsLoading
