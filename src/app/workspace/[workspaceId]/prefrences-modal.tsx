@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useUpdateWorkspace } from "@/features/workspaces/api/use-update-workspace";
 import { TrashIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -18,7 +19,9 @@ interface PreferencesModalProps {
 
 export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesModalProps) => {
   
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue); // Estado para el nombre del workspace
+
+  const  { mutate: updateWorkspace, isPending: isUpdatingWorkspace } = useUpdateWorkspace(); 
 
   return (
     <Dialog
@@ -43,7 +46,7 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
               {value}
             </p>
           </div>
-          
+
           <button
             disabled={false}
             onClick={() => {}}
