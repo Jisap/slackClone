@@ -11,7 +11,7 @@ import {
 import { Doc } from "../../../../convex/_generated/dataModel"
 import { ChevronDown, ListFilter, SquarePen } from "lucide-react"
 import { Hint } from "@/components/hint"
-import { PreferencesModal } from "./prefrences-modal"
+import { PreferencesModal } from "./preferences-modal"
 import { useState } from "react"
 
 interface WorkspaceHeaderProps {
