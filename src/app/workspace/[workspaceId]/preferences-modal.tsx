@@ -32,16 +32,18 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
   const workspaceId = useWorkspaceId();
   const [value, setValue] = useState(initialValue); // Estado para el nombre del workspace
   const [editOpen, setEditOpen] = useState(false);
+  
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",
     "This will permanently delete the workspace. This action cannot be undone."
-  )
+  );
 
   const { mutate: updateWorkspace, isPending: isUpdatingWorkspace } = useUpdateWorkspace();
   const { mutate: removeWorkspace, isPending: isRemovingWorkspace } = useRemoveWorkspace();  
 
   const handleEdit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     updateWorkspace({ id: workspaceId, name: value },
     {
       onSuccess: () => {
