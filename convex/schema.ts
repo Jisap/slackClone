@@ -18,7 +18,13 @@ const schema = defineSchema({
   })
     .index("by_user_id", ["userId"])                              // Indexación por userId
     .index("by_workspace_id", ["workspaceId"])                    // Indexación por workspaceId
-    .index("by_workspace_id_user_id", ["workspaceId", "userId"])  // Indexación por workspaceId y userId
-});
+    .index("by_workspace_id_user_id", ["workspaceId", "userId"]), // Indexación por workspaceId y userId
+
+  channels: defineTable({                                         // Tabla para almacenar los channels de un workspace
+    name: v.string(),                                             // Nombre del channel
+    workspaceId: v.id("workspaces"),
+  })
+    .index("by_worspace_id", ["workspaceId"]),
+})
 
 export default schema;

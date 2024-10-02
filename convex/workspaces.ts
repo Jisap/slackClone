@@ -36,6 +36,10 @@ export const create = mutation({                                // Mutación par
       role: "admin",
     });
 
+    await ctx.db.insert("channels", {                          // Insertamos el canal de la tabla de channels
+      name: "general",
+      workspaceId,
+    });
 
     return workspaceId;                                         // Devolvemos el id del workspace que nos da convex
   }
@@ -159,5 +163,7 @@ export const remove= mutation({
 
     return args.id;                                                          // Devuelve el id del workspace que se ha borrado.
   }
-})
+});
+
+
     
