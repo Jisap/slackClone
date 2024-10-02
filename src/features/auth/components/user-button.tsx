@@ -40,12 +40,13 @@ export const UserButton = () => {
         asChild
         className="outline-none relative"
       >
-        <Avatar className="size-10 hover:opacity-75 transition">
+        <Avatar className="rounded-md size-10 hover:opacity-75 transition">
           <AvatarImage 
             src={image}
             alt={name}
+            className="rounded-md"
           />
-          <AvatarFallback className="bg-sky-400 text-white">
+          <AvatarFallback className="rounded-md bg-sky-400 text-white">
             {avatarFallback}
           </AvatarFallback>
         </Avatar>

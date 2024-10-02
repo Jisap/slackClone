@@ -87,7 +87,7 @@ export const WorkspaceSidebar = () => {
       </WorkspaceSection>
       <WorkspaceSection
         label="Direct Messages"
-        hint="New channel"
+        hint="New Direct Message"
         onNew={() => { }}
       >
         {members?.map((item) => (
