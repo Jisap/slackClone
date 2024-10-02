@@ -1,8 +1,9 @@
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { FaCaretDown } from "react-icons/fa";
-
+import { useToggle } from 'react-use';
 
 
 interface WorkspaceSectionProps {
@@ -13,14 +14,21 @@ interface WorkspaceSectionProps {
 }
 
 export const WorkspaceSection = ({ label, hint, onNew, children }: WorkspaceSectionProps) => {
+  
+  const [on, toggle] = useToggle(true); // Toggle cambia el estado de on a true o false
+  
   return(
     <div className="flex flex-col mt-3 px-2">
       <div className="flex items-center px-3.5 group">
         <Button
           variant="transparent"
           className="p-0.5 text-sm text-[#f9edffcc] shrink-0 size-6"
+          onClick={toggle}
         >
-          <FaCaretDown className="size-4" />
+          <FaCaretDown className={cn(
+            "size-4 transition-transform",
+            on && "-rotate-90"
+          )} />
         </Button>
         <Button
           variant="transparent"
@@ -43,7 +51,7 @@ export const WorkspaceSection = ({ label, hint, onNew, children }: WorkspaceSect
         )}
 
       </div>
-        {children}
+        {on && children}
     </div>
   )
 }
