@@ -17,7 +17,7 @@ export const useConfirm = (
   message: string,
 ): [() => JSX.Element, () => Promise<unknown>] => {
 
-  const [promise, setPromise] = useState<{                  // Estado almacena un objeto 
+  const [promise, setPromise] = useState<{                  // Estado que almacena un objeto, 
     resolve: (value: boolean) => void                       // con la función resolve que se ejecutará cuando se confirma o se cancele el modal
   } | null>(null);                                          // y null si el modal no está abierto
 

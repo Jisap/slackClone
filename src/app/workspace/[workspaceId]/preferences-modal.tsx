@@ -58,18 +58,18 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
 
   const handleRemove = async() => {
 
-    const ok = await confirm(); // Confirmamos que realmente queremos eliminar el workspace
+    const ok = await confirm(); // Confirm abre el modal de confirmación -> establece estado de la promesa en true o false
 
     if(!ok) return;
 
     removeWorkspace({ id: workspaceId },
     {
-      onSuccess: () => {
+      onSuccess: () => { // Si promise es true, se ejecuta el callback de onSuccess
         toast.success("Workspace deleted");
         router.replace("/");
         
       },
-      onError: () => {
+      onError: () => {  // Si promise es false, se ejecuta el callback de onError
         toast.error("failed to delete workspace");
       }
     })
@@ -144,7 +144,7 @@ export const PreferencesModal = ( { open, setOpen, initialValue }: PreferencesMo
               </DialogContent>
             </Dialog>
 
-
+            {/* Boton para eliminar el workspace -> modal de confirmación */}
             <button
               disabled={isRemovingWorkspace}
               onClick={handleRemove}
