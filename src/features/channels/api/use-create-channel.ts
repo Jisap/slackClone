@@ -30,7 +30,7 @@ export const useCreateChannel = () => { // Hook para crear un channel
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const mutation = useMutation(api.channels.create) // Definición de la mutation de la api de convex para crear un workspace
+  const mutation = useMutation(api.channels.create) // Definición de la mutation de la api de convex para crear un channel
 
   const mutate = useCallback(async(values:RequestType, options?: Options) => { // Ejecución de la mutation -> callbacks
     try {
