@@ -8,6 +8,7 @@ import { useGetChannels } from "@/features/channels/api/use-get-channels";
 import { WorkspaceSection } from "./WorkspaceSection";
 import { useGetMembers } from "@/features/members/api/use-get-members";
 import { UserItem } from "./user-item";
+import { useCreateChannelModal } from "@/features/channels/store/use-create-channel-modal";
 
 
 
@@ -15,6 +16,8 @@ export const WorkspaceSidebar = () => {
 
   const workspaceId = useWorkspaceId();                      // Obtenemos el id del workspace contenido en los params
   
+  const [_open, setOpen] = useCreateChannelModal();          // Estado global del modal de creación de channels con atom
+
   const { 
     data: member, 
     isLoading: memberIsLoading 
@@ -33,7 +36,7 @@ export const WorkspaceSidebar = () => {
   const { 
     data: members, 
     isLoading: membersLoading 
-  } = useGetMembers({ workspaceId }); // Obtenemos los datos de los miembros del workspace
+  } = useGetMembers({ workspaceId });                       // Obtenemos los datos de los miembros del workspace
 
   if(memberIsLoading || workspaceIsLoading) {
     return (
@@ -74,7 +77,7 @@ export const WorkspaceSidebar = () => {
       <WorkspaceSection
         label="Channels"
         hint="New channel"
-        onNew={() => {}}
+        onNew={member.role === "admin" ? () => setOpen(true) : undefined} // Abre el modal de creación de channel si eres admin
       >
         {channels?.map((item) => (
           <SidebarItem
@@ -88,7 +91,7 @@ export const WorkspaceSidebar = () => {
       <WorkspaceSection
         label="Direct Messages"
         hint="New Direct Message"
-        onNew={() => { }}
+        onNew={() => {}}
       >
         {members?.map((item) => (
           <UserItem 

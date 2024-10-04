@@ -25,11 +25,13 @@ export const WorkspaceHeader = ({ workspace, isAdmin }: WorkspaceHeaderProps) =>
 
   return (
     <>
+      {/* Modal para la opción Preferences */}
       <PreferencesModal
         open={preferencesOpen}
         setOpen={setPreferencesOpen}
         initialValue={workspace.name}
       />
+      {/* Modal para abrir opciones del workspace */}
       <div className="flex items-center justify-between px-4 h-[49px] gap-0.5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -60,19 +62,16 @@ export const WorkspaceHeader = ({ workspace, isAdmin }: WorkspaceHeaderProps) =>
             {isAdmin && (
               <>
                 <DropdownMenuSeparator />
-
                 <DropdownMenuItem 
                   className="cursor-pointer py-2"
                   onClick={() => {}}  
                 >
                   Invite people to {workspace.name}
                 </DropdownMenuItem>
-
                 <DropdownMenuSeparator />
-
                 <DropdownMenuItem
                   className="cursor-pointer py-2"
-                  onClick={() => setPreferencesOpen(true)}
+                  onClick={() => setPreferencesOpen(true)} // Abre el modal de preferences
                 >
                   Preferences
                 </DropdownMenuItem>

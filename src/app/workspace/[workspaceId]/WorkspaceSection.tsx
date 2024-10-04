@@ -9,7 +9,7 @@ import { useToggle } from 'react-use';
 interface WorkspaceSectionProps {
   label: string;
   hint: string;
-  onNew: () => void;
+  onNew: (() => void) | undefined;
   children: React.ReactNode;
 }
 
