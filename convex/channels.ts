@@ -36,32 +36,32 @@ export const get = query ({
   }
 });
 
-export const create = mutation({
+export const create = mutation({                                     // Mutación para crear un channel
   args: {
     name: v.string(),
     workspaceId: v.id("workspaces"),
   },
   handler: async(ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await getAuthUserId(ctx);                         // El usuario tiene que estar logueado
 
     if(!userId) {
       return null;
     }
 
-    const member = await ctx.db
+    const member = await ctx.db                                      // Vemos si el usuario logueado es miembro del workspace
       .query("members")
       .withIndex("by_workspace_id_user_id", (q) => 
         q.eq("workspaceId", args.workspaceId).eq("userId", userId)
       )
       .unique()
 
-    if(!member || member.role !== "admin"){
+    if(!member || member.role !== "admin"){                          // Si el usuario no es miembro del workspace o no es admin, se devuelve un error
       return new Error("Unauthorized");
     }
 
     const parsedName = args.name.replace(/\s+/g, "").toLowerCase();
 
-    const channelId = await ctx.db
+    const channelId = await ctx.db                                    // Si el usurio es admin o es miembro se crea el channel
       .insert("channels", { 
         name: parsedName,
         workspaceId: args.workspaceId,
