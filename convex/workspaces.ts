@@ -165,5 +165,31 @@ export const remove= mutation({
   }
 });
 
+export const newJoinCode = mutation({
+  args: {
+    workspaceId: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)                                 // Comprobamos si el usuario está autenticado
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
 
+    const member = await ctx.db                                             // Se busca si el usuario autenticado es miembro del workspace cuyo ID se ha proporcionado en los argumentos.
+      .query("members")                                                     // Consulta a la tabla de members
+      .withIndex("by_workspace_id_user_id",                                 // con un índice de combinaciónes de workspaceId y userId
+        (q) => q.eq("workspaceId", args.workspaceId).eq("userId", userId))  // donde el workspaceId=args.workspaceId y el userId=userId
+      .unique();
+
+    if (!member || member.role !== "admin") {                               // Si no es miembro, el valor de member será null.
+      throw new Error("Unauthorized");
+    }
+
+    const joinCode = generateCode();                                        // Generamos un codigo aleatorio para el workspace
+  
+    await ctx.db.patch(args.workspaceId, { joinCode });                     // Si el usuario es miembro, se actualiza el codigo de unión del workspace.
+  
+    return args.workspaceId;                                                // Devuelve el id del workspace que se ha actualizado.
+  }
+})
     
