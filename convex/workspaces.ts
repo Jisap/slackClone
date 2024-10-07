@@ -98,6 +98,31 @@ export const getById = query({
   }
 });
 
+export const getInfoById = query({                                 // Devuelve información básica dek workspace
+  args: {
+    id: v.id("workspaces")                                         // Recibe el id del workspace
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)                        // Comprobamos si el usuario está autenticado
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const member = await ctx.db
+      .query("members")                                            // Consulta a la tabla de members
+      .withIndex("by_workspace_id_user_id",                        // con un índice de combinaciónes de workspaceId y userId
+        (q) => q.eq("workspaceId", args.id).eq("userId", userId))  // donde el workspaceId=args.id y el userId=userId
+      .unique()
+
+    const workspace = await ctx.db.get(args.id);                   // Obtenemos el workspace
+
+    return {
+      name: workspace?.name,                                       // Devolvemos el nombre del workspace
+      isMember: !!member,                                          // Devolvemos si el usuario es miembro del workspace
+    }
+  }
+}) 
+
 
 export const update = mutation({
   args: {

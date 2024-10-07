@@ -5,7 +5,15 @@ import Image from "next/image"
 import Link from "next/link"
 import VerificationInput from "react-verification-input"
 
-const JoinPage = () => {
+interface JoinPageProps {
+  params: {
+    workspaceId: string
+  }
+}
+
+const JoinPage = ({ params }: JoinPageProps) => {
+
+
   return(
     <div className="h-full flex flex-col gap-y-8 items-center justify-center bg-white p-8 rounded-lg shadow-sm">
       <Image 
