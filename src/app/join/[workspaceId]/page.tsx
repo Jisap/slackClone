@@ -1,18 +1,53 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useGetWorkspaceInfo } from "@/features/workspaces/api/use-get-workspace-info"
+import { useJoin } from "@/features/workspaces/api/use-join"
+import { useWorkspaceId } from "@/hooks/use-workspace-id"
+import { cn } from "@/lib/utils"
+import { Loader } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { use, useEffect, useMemo } from "react"
 import VerificationInput from "react-verification-input"
+import { toast } from "sonner"
 
-interface JoinPageProps {
-  params: {
-    workspaceId: string
+
+const JoinPage = () => {
+
+  const router = useRouter()
+  const workspaceId = useWorkspaceId();                               // id del workspace
+  const { data, isLoading } = useGetWorkspaceInfo({id: workspaceId}); // hook para obtener información del workspace
+  const { mutate, isPending } = useJoin()                             // hook para unir al workspace
+
+  const isMember = useMemo(() => data?.isMember, [data?.isMember]);   // Memorizamos si el usuario es miembro del workspace
+
+  useEffect(() => {
+    if(isMember) {
+      router.replace(`/workspace/${workspaceId}`)                     // Si el usuario es miembro del workspace, redirigimos al workspace
+    }
+  },[isMember, workspaceId, router])
+
+  const handleComplete = (values: string) => {
+    mutate({ workspaceId, joinCode: values }, {
+      onSuccess: (id) => {
+        toast.success("Workspace joined")
+        router.replace(`/workspace/${id}`)
+      },
+      onError: () => {
+        toast.error("Failed to join the workspace")
+      }
+    })
   }
-}
 
-const JoinPage = ({ params }: JoinPageProps) => {
-
+  if(isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Loader className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   return(
     <div className="h-full flex flex-col gap-y-8 items-center justify-center bg-white p-8 rounded-lg shadow-sm">
@@ -25,16 +60,17 @@ const JoinPage = ({ params }: JoinPageProps) => {
       <div className="flex flex-col gap-y-4 items-center justify-center max-w-md">
         <div className="flex flex-col gap-y-2 items-center justify-center">
           <h1 className="text-2xl font-bold">
-            Join workspace
+            Join {data?.name}
           </h1>
           <p className="text-md text-muted-foreground">
             Enter the worspace code to join
           </p>
         </div>
         <VerificationInput
+          onComplete={handleComplete}
           length={6}
           classNames={{
-            container: "flex gap-x-2",
+            container: cn("flex gap-x-2", isLoading && "opacity-50 cursor-not-allowed"),
             character: "uppercase h-auto rounded-md border border-gray-300 flex items-center justify-center text-lg font-medium text-gray-500",
             characterInactive: "bg-muted",
             characterSelected: "bg-white text-black",
