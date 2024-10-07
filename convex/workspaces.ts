@@ -191,5 +191,45 @@ export const newJoinCode = mutation({
   
     return args.workspaceId;                                                // Devuelve el id del workspace que se ha actualizado.
   }
+});
+
+export const join = mutation({
+  args: {
+    joinCode: v.string(),
+    workspaceId: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)                                // Comprobamos si el usuario está autenticado
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const workspace = await ctx.db.get(args.workspaceId)                   // Obtenemos el workspace
+    if (!workspace) {
+      throw new Error("Workspace not found");
+    }
+
+    if(workspace.joinCode !== args.joinCode.toLocaleLowerCase()) {         // Comprobamos que el codigo de unión sea correcto
+      throw new Error("Invalid join code");
+    }
+
+    const existingMember = await ctx.db                                     // Se busca si el usuario autenticado es miembro del workspace cuyo ID se ha proporcionado en los argumentos.
+      .query("members")                                                     // Consulta a la tabla de members
+      .withIndex("by_workspace_id_user_id",                                 // con un índice de combinaciónes de workspaceId y userId
+        (q) => q.eq("workspaceId", args.workspaceId).eq("userId", userId))  // donde el workspaceId=args.workspaceId y el userId=userId
+      .unique();
+
+    if (existingMember) {                                                   // Si no es miembro del workspace
+      throw new Error("Already an active member on this workspace");        // Se lanza una excepción
+    }
+
+    await ctx.db.insert("members", {                                        // Se inserta el miembro en la tabla de members
+      userId,
+      workspaceId: workspace._id,
+      role: "member",
+    });
+
+    return workspace._id;                                                   // Devuelve el id del workspace que se ha unido. 
+  }
 })
     
