@@ -9,11 +9,13 @@ import { WorkspaceSection } from "./WorkspaceSection";
 import { useGetMembers } from "@/features/members/api/use-get-members";
 import { UserItem } from "./user-item";
 import { useCreateChannelModal } from "@/features/channels/store/use-create-channel-modal";
+import { useChannelId } from "@/hooks/use-channel-id";
 
 
 
 export const WorkspaceSidebar = () => {
 
+  const channelId = useChannelId();                          // Obtenemos el id del chanel contenido en los params
   const workspaceId = useWorkspaceId();                      // Obtenemos el id del workspace contenido en los params
   
   const [_open, setOpen] = useCreateChannelModal();          // Estado global del modal de creación de channels con atom
@@ -85,6 +87,7 @@ export const WorkspaceSidebar = () => {
             icon={HashIcon}
             label={item.name}
             id={item._id}
+            variant={channelId === item._id ? "active" : "default"} // Si estamos en la página de un channel añadimos la clase active
           />
         ))}
       </WorkspaceSection>
