@@ -25,6 +25,12 @@ export const Header = ({ name }: HeaderProps) => {
   const [value, setValue] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const value = e.target.value.replace(/\s+/g, "").toLowerCase(); // Limpiamos el espacio en blanco y quitamos los acentos
+    setValue(value);
+  };
+
   return (
     <div className="bg-white border-b h-[49px] flex items-center px-4 overflow-hidden">
       <Dialog>
@@ -67,7 +73,7 @@ export const Header = ({ name }: HeaderProps) => {
                   <Input 
                     value={value}
                     disabled={false}
-                    onChange={() => {}}
+                    onChange={handleChange}
                     required
                     autoFocus
                     minLength={3}
