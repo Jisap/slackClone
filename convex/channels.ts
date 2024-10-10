@@ -69,6 +69,38 @@ export const create = mutation({                                     // Mutació
       
     return channelId;
   }
+});
+
+export const getById = query({
+  args: {
+    id: v.id("channels"),
+  },
+  handler: async(ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    
+    if(!userId) {
+      return null;
+    }
+
+    const channel = await ctx.db.get(args.id)
+  
+    if(!channel) {
+      return null;
+    }
+
+    const member = await ctx.db                                             // Vemos si el usuario logueado es miembro de un canal
+      .query("members")                                                     // Consulta a la tabla de members
+      .withIndex("by_workspace_id_user_id", (q) =>                          // con un índice de combinaciónes de workspaceId y userId
+        q.eq("workspaceId", channel.workspaceId).eq("userId", userId)       // donde el campo workspaceId es igual al workspaceId del canal al que se está accediendo.
+    )                                                                       // y el userId coincide con el ID del usuario autenticado.
+      .unique()
+
+      if(!member){
+        return null;
+      }
+      
+    return channel;
+  }
 })
 
 

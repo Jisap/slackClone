@@ -15,13 +15,13 @@ const ChanneIdPage = () => {
   const workspaceId = useWorkspaceId();
   const [open, setOpen] = useCreateChannelModal();
 
-  const { data: member, isLoading: memberLoading } = useCurrentMember({ workspaceId });             // Datos del usuario actual ( si es ono miembro del workspace )
+  const { data: member, isLoading: memberLoading } = useCurrentMember({ workspaceId });             // Datos del usuario actual ( si es o no miembro del workspace )
   const { data: workspace, isLoading: workspaceIsLoading } = useGetWorkspace({ id: workspaceId });  // Datos del workspace
   const { data: channels, isLoading: channelsLoading } = useGetChannels({ workspaceId });           // Datos de los channels del workspace
 
 
-  const channelId = useMemo(() => channels?.[0]?._id, [channels]);   // Memorizamos el id del primer channel del workspace
-  const isAdmin = useMemo(() => member?.role === "admin", [member?.role])
+  const channelId = useMemo(() => channels?.[0]?._id, [channels]);          // Memorizamos el id del primer channel del workspace
+  const isAdmin = useMemo(() => member?.role === "admin", [member?.role]);  // Memorizamos si el usuario actual es admin
 
   useEffect(() => {
     if (
@@ -51,7 +51,7 @@ const ChanneIdPage = () => {
     isAdmin
   ]);
 
-  if (workspaceIsLoading || channelsLoading) {
+  if (workspaceIsLoading || channelsLoading || memberLoading) {
     return (
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <Loader className="size-6 animate-spin text-muted-foreground" />
@@ -59,7 +59,7 @@ const ChanneIdPage = () => {
     )
   }
 
-  if (!workspace) {
+  if (!workspace || !member) {
     return (
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <TriangleAlert className="size-6 text-muted-foreground" />
