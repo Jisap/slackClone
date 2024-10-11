@@ -71,6 +71,77 @@ export const create = mutation({                                     // Mutació
   }
 });
 
+export const update = mutation({                                     // Mutación para actualizar el nombre de un channel
+  args: {
+    id: v.id("channels"),
+    name: v.string(),
+  },
+  handler: async(ctx, args) => {
+    const userId = await getAuthUserId(ctx);                         // El usuario tiene que estar logueado
+
+    if (!userId) {
+      return null;
+    }
+
+    const channel = await ctx.db.get(args.id);                      // Validamos que el canal exista
+    if (!channel) {
+      throw new Error("Channel not found");
+    }
+
+    const member = await ctx.db                                     // Vemos si el usuario logueado es miembro del workspace
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", channel.workspaceId).eq("userId", userId)
+      )
+      .unique()
+
+    if (!member || member.role !== "admin") {                        // Si el usuario no es miembro del workspace o no es admin, se devuelve un error
+      return new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.id, {                                    // Si el usuario es admin o es miembro se actualiza el channel
+      name: args.name
+    })
+
+    return args.id
+  }
+});
+
+export const remove = mutation({                                     // Mutación para borrar un channel
+  args: {
+    id: v.id("channels"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);                         // El usuario tiene que estar logueado
+
+    if (!userId) {
+      return null;
+    }
+
+    const channel = await ctx.db.get(args.id);                      // Validamos que el canal exista
+    if (!channel) {
+      throw new Error("Channel not found");
+    }
+
+    const member = await ctx.db                                     // Vemos si el usuario logueado es miembro del workspace
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", channel.workspaceId).eq("userId", userId)
+      )
+      .unique()
+
+    if (!member || member.role !== "admin") {                        // Si el usuario no es miembro del workspace o no es admin, se devuelve un error
+      return new Error("Unauthorized");
+    }
+
+    //TODO: Remove associated messages
+
+    await ctx.db.delete( args.id )                                   // Si el usuario es admin o es miembro se borra el channel
+
+    return args.id
+  }
+})
+
 export const getById = query({
   args: {
     id: v.id("channels"),

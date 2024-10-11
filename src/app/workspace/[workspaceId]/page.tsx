@@ -28,7 +28,7 @@ const ChanneIdPage = () => {
       workspaceIsLoading || 
       channelsLoading || 
       !workspace ||
-      member ||
+      !member ||
       memberLoading
     ) return   // Si el workspace no esta cargado o los channels no estan cargados, o el member no está cargado, no hacemos nada.
 
