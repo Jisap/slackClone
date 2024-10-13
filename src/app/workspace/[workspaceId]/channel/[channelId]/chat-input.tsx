@@ -5,8 +5,11 @@ import { useRef } from 'react';
 
 const Editor = dynamic(() => import('@/components/editor'), { ssr: false })
 
+interface ChatInputProps {
+  placeholder?: string;
+}
 
-export const ChatInput = () => {
+export const ChatInput = ({ placeholder }: ChatInputProps) => {
 
   const editorRef = useRef<Quill | null>(null);
 
@@ -14,7 +17,7 @@ export const ChatInput = () => {
     <div className='px-5 w-full'>
       <Editor 
         variant="create"
-        placeHolder='Test placeholder'
+        placeHolder={placeholder}
         onSubmit={() => {}}  
         disabled={false}
         innerRef={editorRef}
