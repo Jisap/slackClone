@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { MutableRefObject, useEffect, useLayoutEffect, useRef } from 'react'
 import Quill, { QuillOptions } from 'quill'
 import "quill/dist/quill.snow.css"
 import { Button } from './ui/button';
@@ -6,14 +6,48 @@ import { PiTextAa } from 'react-icons/pi';
 import { ImageIcon, Smile } from 'lucide-react';
 import { MdSend } from 'react-icons/md';
 import { Hint } from './hint';
+import { Delta, Op } from 'quill/core';
+
+
+type EditorValue = {
+  image: File | null;
+  body: string;
+}
 
 interface EditorProps {
   variant?: "create" | "update"
+  onSubmit: ({ image, body }: EditorValue) => void;
+  onCancel?: () => void;
+  placeHolder?: string;
+  defaultValue?: Delta | Op[];
+  disabled?: boolean;
+  innerRef?: MutableRefObject<Quill | null>;
 }
 
-const Editor = ({ variant = "create" } : EditorProps) => {
+const Editor = ({ 
+  variant = "create",
+  onSubmit,
+  onCancel,
+  placeHolder="Write a message...",
+  defaultValue=[],
+  disabled=false,
+  innerRef,
+} : EditorProps) => {
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const submitRef = useRef(onSubmit);                        // Estas ref permiten llamar a las props desde dentro del useEffect
+  const placeHolderRef = useRef(placeHolder);
+  const quillRef = useRef<Quill | null>(null);
+  const defaultValueRef = useRef(defaultValue);
+  const disabledRef = useRef(disabled);
+
+  useLayoutEffect(() => {                                      // Esto se ejecuta cuando el componente se renderiza por primera vez
+    submitRef.current = onSubmit;
+    placeHolderRef.current = placeHolder;
+    quillRef.current = null;
+    defaultValueRef.current = defaultValue;
+    disabledRef.current = disabled; 
+  })
 
   useEffect(() => {
     if(!containerRef.current) return;
@@ -26,6 +60,7 @@ const Editor = ({ variant = "create" } : EditorProps) => {
 
     const options: QuillOptions = {
       theme: 'snow',
+      placeholder: placeHolderRef.current,
     }
 
     new Quill(editorContainer, options);
