@@ -7,8 +7,11 @@ import { ImageIcon, Smile } from 'lucide-react';
 import { MdSend } from 'react-icons/md';
 import { Hint } from './hint';
 
+interface EditorProps {
+  variant?: "create" | "update"
+}
 
-const Editor = () => {
+const Editor = ({ variant = "create" } : EditorProps) => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -62,17 +65,39 @@ const Editor = () => {
             <Smile className='size-4' />
           </Button>
         </Hint>
-        <Hint label="Image">
-          <Button
-            disabled={false}
-            variant='ghost'
-            size="iconSm"
-            onClick={() => { }}
-          >
-            <ImageIcon className='size-4' />
-          </Button>
-        </Hint>
-        <Hint label="Submit">
+        {variant === "create" && (
+          <Hint label="Image">
+            <Button
+              disabled={false}
+              variant='ghost'
+              size="iconSm"
+              onClick={() => { }}
+            >
+              <ImageIcon className='size-4' />
+            </Button>
+          </Hint>
+        )}
+        {variant === "update" && (
+          <div className='ml-auto flex items-center gap-x-2'>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {}}
+              disabled={false}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={false}
+              size="sm"
+              onClick={() => {}}
+              className='bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
+            >
+              Save
+            </Button>
+          </div>
+        )}
+        {variant === "create" && (
           <Button
             disabled={false}
             onClick={() => {}}
@@ -81,7 +106,8 @@ const Editor = () => {
           >
             <MdSend className='size-4' />
           </Button>
-        </Hint>
+        )}
+        
         </div>     
       </div>
 
