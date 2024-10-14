@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useEffect, useLayoutEffect, useRef } from 'react'
+import React, { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Quill, { QuillOptions } from 'quill'
 import "quill/dist/quill.snow.css"
 import { Button } from './ui/button';
@@ -7,6 +7,7 @@ import { ImageIcon, Smile } from 'lucide-react';
 import { MdSend } from 'react-icons/md';
 import { Hint } from './hint';
 import { Delta, Op } from 'quill/core';
+import { cn } from '@/lib/utils';
 
 
 type EditorValue = {
@@ -33,6 +34,8 @@ const Editor = ({
   disabled=false,
   innerRef,
 } : EditorProps) => {
+
+  const [text, setText] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef(onSubmit);                        // Estas ref permiten llamar a las props desde dentro del useEffect
@@ -63,14 +66,37 @@ const Editor = ({
       placeholder: placeHolderRef.current,
     }
 
-    new Quill(editorContainer, options);
+    const quill = new Quill(editorContainer, options);
+    quillRef.current = quill;
+    quillRef.current.focus();
+
+    if(innerRef){
+      innerRef.current = quill;
+    }
+
+    quill.setContents(defaultValueRef.current);
+    setText(quill.getText());
+    quill.on(Quill.events.TEXT_CHANGE, () => {
+      setText(quill.getText());
+    })
 
     return () => {
+      quill.off(Quill.events.TEXT_CHANGE);
       if(container){
         container.innerHTML = '';
       }
+      if(quillRef.current){
+        quillRef.current = null;
+      }
+      if(innerRef){
+        innerRef.current = null;
+      }
     }
-  },[])
+  },[innerRef]);
+
+  const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0; 
+
+  console.log({ isEmpty, text });
 
   return (
     <div className='flex flex-col'>
@@ -134,10 +160,15 @@ const Editor = ({
         )}
         {variant === "create" && (
           <Button
-            disabled={false}
+            disabled={disabled || isEmpty}
             onClick={() => {}}
             size="iconSm"
-            className='ml-auto bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
+            className={cn(
+              'ml-auto', 
+              isEmpty 
+                ? 'bg-white hover:bg-white text-muted-foreground'
+                : 'bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
+            )}
           >
             <MdSend className='size-4' />
           </Button>

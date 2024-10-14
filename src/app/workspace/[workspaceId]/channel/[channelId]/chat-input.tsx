@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import Quill from 'quill';
 import { useRef } from 'react';
 
-const Editor = dynamic(() => import('@/components/editor'), { ssr: false })
+const Editor = dynamic(() => import('@/components/editor'), { ssr: false }); // Carga el componente Editor de forma dinámica y desactiva el renderizado del lado del servidor (SSR) para este componente.
 
 interface ChatInputProps {
   placeholder?: string;
@@ -12,6 +12,7 @@ interface ChatInputProps {
 export const ChatInput = ({ placeholder }: ChatInputProps) => {
 
   const editorRef = useRef<Quill | null>(null);
+
 
   return (
     <div className='px-5 w-full'>
