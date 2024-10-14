@@ -21,7 +21,7 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
         placeHolder={placeholder}
         onSubmit={() => {}}  
         disabled={false}
-        innerRef={editorRef}
+        innerRef={editorRef} // ref al componente <Editor />
       />
     </div>
   )

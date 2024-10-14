@@ -20,7 +20,7 @@ interface EditorProps {
   onSubmit: ({ image, body }: EditorValue) => void;
   onCancel?: () => void;
   placeHolder?: string;
-  defaultValue?: Delta | Op[];
+  defaultValue?: Delta | Op[]; // Objeto Delta (formato interno de Quill) o un array de operaciones.
   disabled?: boolean;
   innerRef?: MutableRefObject<Quill | null>;
 }
@@ -38,13 +38,13 @@ const Editor = ({
   const [text, setText] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const submitRef = useRef(onSubmit);                        // Estas ref permiten llamar a las props desde dentro del useEffect
+  const submitRef = useRef(onSubmit);                    // Estas ref permiten llamar a las props desde dentro del useEffect
   const placeHolderRef = useRef(placeHolder);
   const quillRef = useRef<Quill | null>(null);
   const defaultValueRef = useRef(defaultValue);
   const disabledRef = useRef(disabled);
 
-  useLayoutEffect(() => {                                      // Esto se ejecuta cuando el componente se renderiza por primera vez
+  useLayoutEffect(() => {                               // Este efecto se ejecuta antes de que el navegador pinte, actualizando las referencias con los valores más recientes de las props.
     submitRef.current = onSubmit;
     placeHolderRef.current = placeHolder;
     quillRef.current = null;
@@ -55,41 +55,42 @@ const Editor = ({
   useEffect(() => {
     if(!containerRef.current) return;
 
-    const container = containerRef.current;
+    const container = containerRef.current;            // Define una ref llamada container que sera donde se renderizara el contenedor
 
-    const editorContainer = container.appendChild(
+    const editorContainer = container.appendChild(     // Al contenedor se le añade un div
       container.ownerDocument.createElement('div')
     );
 
-    const options: QuillOptions = {
+    const options: QuillOptions = {                    // Se definen las opciones del container
       theme: 'snow',
       placeholder: placeHolderRef.current,
     }
 
-    const quill = new Quill(editorContainer, options);
-    quillRef.current = quill;
-    quillRef.current.focus();
+    const quill = new Quill(editorContainer, options); // Se aplican las opciones al contenedor en una instancia de Quill 
+    quillRef.current = quill;                          // Definida la instancia de Quill se vincula a quillRef -> Permite acceder a la instancia de Quill desde cualquier parte del componente
+    quillRef.current.focus();                          // Se establece así el foco en quillRef
 
-    if(innerRef){
+    if (innerRef) {                                    // Al asignar quill a innerRef.current, se permite que el componente padre tenga acceso directo a la instancia de Quill.
       innerRef.current = quill;
     }
 
-    quill.setContents(defaultValueRef.current);
-    setText(quill.getText());
-    quill.on(Quill.events.TEXT_CHANGE, () => {
-      setText(quill.getText());
+    quill.setContents(defaultValueRef.current);        // Establece el contenido inicial del editor Quill.
+    setText(quill.getText());                          // Actualiza el estado text del componente React con el texto actual del editor. 
+    quill.on(Quill.events.TEXT_CHANGE, () => {         // Se agrega un listener para el evento TEXT_CHANGE del editor Quill.
+      setText(quill.getText());                        // Cuando cambia el texto de quill se actualiza el estado de text                
     })
 
-    return () => {
-      quill.off(Quill.events.TEXT_CHANGE);
+    return () => {                                     // Cuando el componente se desmonta o cuando las dependencias del efecto cambian, 
+      
+      quill.off(Quill.events.TEXT_CHANGE);             // elimina el event listener, 
       if(container){
-        container.innerHTML = '';
+        container.innerHTML = '';                      // limpia el contenido HTML del contenedor del editor.
       }
-      if(quillRef.current){
+      if (quillRef.current) {                          // establece la referencia de Quill a null.
         quillRef.current = null;
       }
-      if(innerRef){
-        innerRef.current = null;
+      if(innerRef){                                    // establece la referencia de innerRef a null, lo cual
+        innerRef.current = null;                       // asegura que cualquier referencia externa a la instancia de Quill también se limpie
       }
     }
   },[innerRef]);
