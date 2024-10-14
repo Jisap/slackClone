@@ -36,6 +36,7 @@ const Editor = ({
 } : EditorProps) => {
 
   const [text, setText] = useState('');
+  const [isToolbarVisible, setIsToolbarVisible] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef(onSubmit);                    // Estas ref permiten llamar a las props desde dentro del useEffect
@@ -64,6 +65,34 @@ const Editor = ({
     const options: QuillOptions = {                    // Se definen las opciones del container
       theme: 'snow',
       placeholder: placeHolderRef.current,
+      modules: {
+        toolbar:[
+          ["bold", "italic", "strike"],
+          ["link"],
+          [{list: "ordered"}, {list: "bullet"}],
+          [{ 'align': [] }],
+          ['blockquote', 'code-block'],
+          [{ 'size': ['small', false, 'large', 'huge'] }],
+        ],
+        keyboard: {
+          bindings: {
+            enter: {
+              key: "Enter",
+              handler: () => {
+                //TODO: Submit form
+                return 
+              }
+            },
+            shift_enter: {
+              key: "Enter",
+              shiftKey: true,
+              handler: () => {
+                quill.insertText(quill.getSelection()?.index || 0, "\n")
+              }
+            }
+          }
+        }
+      }
     }
 
     const quill = new Quill(editorContainer, options); // Se aplican las opciones al contenedor en una instancia de Quill 
@@ -95,9 +124,19 @@ const Editor = ({
     }
   },[innerRef]);
 
+  const toggleToolbar = () => {
+    setIsToolbarVisible((current) => !current);                                // Conmuta el estado de isToolbarVisible -> modifica mensaje del hint
+    const toolbarElement = containerRef.current?.querySelector('.ql-toolbar'); // Obtiene el elemento con clase "ql-toolbar" del contenedor
+
+    if(toolbarElement){                                                        // Si "ql-toolbar" existe
+      toolbarElement.classList.toggle("hidden")                                // conmuta la clase "hidden" del elemento -> oculta/muestra el toolbar
+    }
+
+  }
+
   const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0; 
 
-  console.log({ isEmpty, text });
+  
 
   return (
     <div className='flex flex-col'>
@@ -107,19 +146,19 @@ const Editor = ({
           className='h-full ql-custom'  
         />
         <div className='flex px-2 pb-2 z-[5]'>
-        <Hint label="Hide formatting">
+        <Hint label={isToolbarVisible ? "Hide formatting" : "Show formatting"}>
           <Button
-            disabled={false}
+            disabled={disabled}
             variant='ghost'
             size="iconSm"
-            onClick={() => {}}
+            onClick={toggleToolbar}
           >
             <PiTextAa className='size-4' />
           </Button>
         </Hint>
         <Hint label="emoji">
           <Button
-            disabled={false}
+            disabled={disabled}
             variant='ghost'
             size="iconSm"
             onClick={() => { }}
@@ -130,7 +169,7 @@ const Editor = ({
         {variant === "create" && (
           <Hint label="Image">
             <Button
-              disabled={false}
+              disabled={disabled}
               variant='ghost'
               size="iconSm"
               onClick={() => { }}
@@ -145,12 +184,12 @@ const Editor = ({
               variant="outline"
               size="sm"
               onClick={() => {}}
-              disabled={false}
+              disabled={disabled}
             >
               Cancel
             </Button>
             <Button
-              disabled={false}
+              disabled={disabled || isEmpty}
               size="sm"
               onClick={() => {}}
               className='bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
