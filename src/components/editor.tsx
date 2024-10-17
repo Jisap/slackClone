@@ -8,6 +8,7 @@ import { MdSend } from 'react-icons/md';
 import { Hint } from './hint';
 import { Delta, Op } from 'quill/core';
 import { cn } from '@/lib/utils';
+import { EmojiPopover } from './emoji-popover';
 
 
 type EditorValue = {
@@ -136,7 +137,10 @@ const Editor = ({
 
   const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0; 
 
-  
+  const onEmojiSelect = (emoji:any) => {                                   // Función para la selección de un emoji 
+    const quill = quillRef.current;                                        // Obtiene la instancia de Quill desde la ref
+    quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);    //  inserta el emoji en la posición actual del cursor. 
+  }
 
   return (
     <div className='flex flex-col'>
@@ -156,16 +160,15 @@ const Editor = ({
             <PiTextAa className='size-4' />
           </Button>
         </Hint>
-        <Hint label="emoji">
+        <EmojiPopover onEmojiSelect={() => {}}>
           <Button
             disabled={disabled}
             variant='ghost'
             size="iconSm"
-            onClick={() => { }}
           >
             <Smile className='size-4' />
           </Button>
-        </Hint>
+        </EmojiPopover>
         {variant === "create" && (
           <Hint label="Image">
             <Button
