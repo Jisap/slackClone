@@ -39,6 +39,7 @@ const Editor = ({
   const [text, setText] = useState('');
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
 
+  
   const containerRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef(onSubmit);                    // Estas ref permiten llamar a las props desde dentro del useEffect
   const placeHolderRef = useRef(placeHolder);
@@ -110,6 +111,7 @@ const Editor = ({
       setText(quill.getText());                        // Cuando cambia el texto de quill se actualiza el estado de text                
     })
 
+
     return () => {                                     // Cuando el componente se desmonta o cuando las dependencias del efecto cambian, 
       
       quill.off(Quill.events.TEXT_CHANGE);             // elimina el event listener, 
@@ -122,6 +124,7 @@ const Editor = ({
       if(innerRef){                                    // establece la referencia de innerRef a null, lo cual
         innerRef.current = null;                       // asegura que cualquier referencia externa a la instancia de Quill también se limpie
       }
+
     }
   },[innerRef]);
 
@@ -135,12 +138,15 @@ const Editor = ({
 
   }
 
-  const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0; 
-
   const onEmojiSelect = (emoji:any) => {                                   // Función para la selección de un emoji 
     const quill = quillRef.current;                                        // Obtiene la instancia de Quill desde la ref
+    console.log(quill);
     quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);    //  inserta el emoji en la posición actual del cursor. 
   }
+
+
+  const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0; 
+
 
   return (
     <div className='flex flex-col'>
@@ -160,7 +166,7 @@ const Editor = ({
             <PiTextAa className='size-4' />
           </Button>
         </Hint>
-        <EmojiPopover onEmojiSelect={() => {}}>
+        <EmojiPopover onEmojiSelect={onEmojiSelect}>
           <Button
             disabled={disabled}
             variant='ghost'
@@ -168,7 +174,7 @@ const Editor = ({
           >
             <Smile className='size-4' />
           </Button>
-        </EmojiPopover>
+      </EmojiPopover>
         {variant === "create" && (
           <Hint label="Image">
             <Button
