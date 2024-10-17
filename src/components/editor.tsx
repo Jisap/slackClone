@@ -38,7 +38,7 @@ const Editor = ({
 
   const [text, setText] = useState('');
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
-
+ 
   
   const containerRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef(onSubmit);                    // Estas ref permiten llamar a las props desde dentro del useEffect
@@ -53,7 +53,7 @@ const Editor = ({
     quillRef.current = null;
     defaultValueRef.current = defaultValue;
     disabledRef.current = disabled; 
-  })
+  },[])
 
   useEffect(() => {
     if(!containerRef.current) return;
@@ -100,18 +100,17 @@ const Editor = ({
     const quill = new Quill(editorContainer, options); // Se aplican las opciones al contenedor en una instancia de Quill 
     quillRef.current = quill;                          // Definida la instancia de Quill se vincula a quillRef -> Permite acceder a la instancia de Quill desde cualquier parte del componente
     quillRef.current.focus();                          // Se establece así el foco en quillRef
-
+    
     if (innerRef) {                                    // Al asignar quill a innerRef.current, se permite que el componente padre tenga acceso directo a la instancia de Quill.
       innerRef.current = quill;
     }
-
+    
     quill.setContents(defaultValueRef.current);        // Establece el contenido inicial del editor Quill.
     setText(quill.getText());                          // Actualiza el estado text del componente React con el texto actual del editor. 
     quill.on(Quill.events.TEXT_CHANGE, () => {         // Se agrega un listener para el evento TEXT_CHANGE del editor Quill.
       setText(quill.getText());                        // Cuando cambia el texto de quill se actualiza el estado de text                
     })
-
-
+    
     return () => {                                     // Cuando el componente se desmonta o cuando las dependencias del efecto cambian, 
       
       quill.off(Quill.events.TEXT_CHANGE);             // elimina el event listener, 
@@ -124,7 +123,7 @@ const Editor = ({
       if(innerRef){                                    // establece la referencia de innerRef a null, lo cual
         innerRef.current = null;                       // asegura que cualquier referencia externa a la instancia de Quill también se limpie
       }
-
+      
     }
   },[innerRef]);
 
@@ -140,8 +139,7 @@ const Editor = ({
 
   const onEmojiSelect = (emoji:any) => {                                   // Función para la selección de un emoji 
     const quill = quillRef.current;                                        // Obtiene la instancia de Quill desde la ref
-    console.log(quill);
-    quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);    //  inserta el emoji en la posición actual del cursor. 
+    quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);    // inserta el emoji en la posición actual del cursor. 
   }
 
 
