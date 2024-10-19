@@ -37,6 +37,7 @@ const Editor = ({
 } : EditorProps) => {
 
   const [text, setText] = useState('');
+  const [image, setImage] = useState<File | null>(null);
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
  
   
@@ -46,6 +47,7 @@ const Editor = ({
   const quillRef = useRef<Quill | null>(null);
   const defaultValueRef = useRef(defaultValue);
   const disabledRef = useRef(disabled);
+  const imageElementRef = useRef<HTMLInputElement>(null);
 
   useLayoutEffect(() => {                               // Este efecto se ejecuta antes de que el navegador pinte, actualizando las referencias con los valores más recientes de las props.
     submitRef.current = onSubmit;
@@ -53,7 +55,7 @@ const Editor = ({
     quillRef.current = null;
     defaultValueRef.current = defaultValue;
     disabledRef.current = disabled; 
-  },[])
+  }, []);                                              // [] garantiza que las referencias se inicializan correctamente y se mantienen estables durante la vida útil del componente.
 
   useEffect(() => {
     if(!containerRef.current) return;
@@ -148,6 +150,13 @@ const Editor = ({
 
   return (
     <div className='flex flex-col'>
+      <input 
+        type="file" 
+        accept='image/*'
+        ref={imageElementRef} // 
+        onChange={(event) =>  setImage(event.target.files![0])}
+        className='hidden'
+      />
       <div className='flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white'>
         <div 
           ref={containerRef}
@@ -179,7 +188,7 @@ const Editor = ({
               disabled={disabled}
               variant='ghost'
               size="iconSm"
-              onClick={() => { }}
+              onClick={() => imageElementRef.current?.click()} // click en el input de imagen -> setImage
             >
               <ImageIcon className='size-4' />
             </Button>
