@@ -3,12 +3,13 @@ import Quill, { QuillOptions } from 'quill'
 import "quill/dist/quill.snow.css"
 import { Button } from './ui/button';
 import { PiTextAa } from 'react-icons/pi';
-import { ImageIcon, Smile } from 'lucide-react';
+import { ImageIcon, Smile, X, XIcon } from 'lucide-react';
 import { MdSend } from 'react-icons/md';
 import { Hint } from './hint';
 import { Delta, Op } from 'quill/core';
 import { cn } from '@/lib/utils';
 import { EmojiPopover } from './emoji-popover';
+import Image from 'next/image';
 
 
 type EditorValue = {
@@ -162,6 +163,28 @@ const Editor = ({
           ref={containerRef}
           className='h-full ql-custom'  
         />
+        {!!image && (
+          <div className='p-2'>
+            <div className='relative size-[62px] flex items-center justify-center group/image'>
+              <button
+                onClick={() => {
+                  setImage(null)
+                  imageElementRef.current!.value = ""
+                }}
+                className='hidden group-hover/image:flex rounded-full bg-black/70 hover:bg-black absolute -top-2.5 -right-2.5 text-white size-6 z-[4] 
+                border-2 border-white items-center justify-center'
+              >
+                <XIcon className='size-3.5'/>
+              </button>
+              <Image 
+                src={URL.createObjectURL(image)}
+                alt="uploaded"
+                fill
+                className='rounded-xl overflow-hidden border object-cover'
+              />
+            </div>
+          </div>
+        )}
         <div className='flex px-2 pb-2 z-[5]'>
         <Hint label={isToolbarVisible ? "Hide formatting" : "Show formatting"}>
           <Button
