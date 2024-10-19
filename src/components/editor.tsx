@@ -42,8 +42,8 @@ const Editor = ({
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
  
   
-  const containerRef = useRef<HTMLDivElement>(null);
-  const submitRef = useRef(onSubmit);                    // Estas ref permiten llamar a las props desde dentro del useEffect
+  const containerRef = useRef<HTMLDivElement>(null);    // Estas ref permiten llamar a las props desde dentro del useEffect
+  const submitRef = useRef(onSubmit);                   // Callback en la referencia submitRef se llama cuando se envía el formulario.
   const placeHolderRef = useRef(placeHolder);
   const quillRef = useRef<Quill | null>(null);
   const defaultValueRef = useRef(defaultValue);
@@ -83,8 +83,14 @@ const Editor = ({
           bindings: {
             enter: {
               key: "Enter",
-              handler: () => {
-                //TODO: Submit form
+              handler: () => { // Submit del formulario
+                const text = quill.getText();
+                const addedImage = imageElementRef.current?.files?.[0] || null;
+                const isEmpty = !addedImage && text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
+                if(isEmpty) return;
+
+                const body = JSON.stringify(quill.getContents()); // Obtiene el contenido del editor como un string JSON.
+                submitRef.current?.({ body, image: addedImage }); // Llama al callback de submit con los datos del editor.
                 return 
               }
             },
@@ -146,7 +152,7 @@ const Editor = ({
   }
 
 
-  const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0; 
+  const isEmpty = !image && text.replace(/<(.|\n)*?>/g, "").trim().length === 0; 
 
 
   return (
@@ -224,7 +230,7 @@ const Editor = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {}}
+              onClick={onCancel}
               disabled={disabled}
             >
               Cancel
@@ -232,7 +238,12 @@ const Editor = ({
             <Button
               disabled={disabled || isEmpty}
               size="sm"
-              onClick={() => {}}
+                onClick={() => {
+                  onSubmit({
+                    body: JSON.stringify(quillRef.current?.getContents()), // Obtiene el contenido del editor como un string JSON. desde la ref de quill
+                    image,                                                 // Obtiene el archivo de imagen si está presente
+                  })
+                }}
               className='bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
             >
               Save
@@ -242,7 +253,12 @@ const Editor = ({
         {variant === "create" && (
           <Button
             disabled={disabled || isEmpty}
-            onClick={() => {}}
+            onClick={() => {
+              onSubmit({ 
+                body: JSON.stringify(quillRef.current?.getContents()), 
+                image,
+              })
+            }}
             size="iconSm"
             className={cn(
               'ml-auto', 
