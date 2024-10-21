@@ -4,7 +4,7 @@ import { useChannelId } from '@/hooks/use-channel-id';
 import { useWorkspaceId } from '@/hooks/use-workspace-id';
 import dynamic from 'next/dynamic'
 import Quill from 'quill';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 const Editor = dynamic(() => import('@/components/editor'), { ssr: false }); // Carga el componente Editor de forma dinámica y desactiva el renderizado del lado del servidor (SSR) para este componente.
 
@@ -13,6 +13,8 @@ interface ChatInputProps {
 }
 
 export const ChatInput = ({ placeholder }: ChatInputProps) => {
+
+  const [editorKey, setEditorKey] = useState(0);
 
   const editorRef = useRef<Quill | null>(null);
 
@@ -25,11 +27,13 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
   const handleSubmit = ({ body, image }: {body: string, image: File | null}) => { // Extraemos de la petición el cuerpo del mensaje y la imagen asociada
     console.log(body, image);
     createMessage({ body, workspaceId, channelId }); // Llamamos a la mutation de convex para crear el mensaje
+    setEditorKey((prevKey) => prevKey + 1);          // Incrementamos el contador de mensajes -> provoca que el editor se actualice al actualizar el estado del componente
   }
 
   return (
     <div className='px-5 w-full'>
       <Editor 
+        key={editorKey}
         variant="create"
         placeHolder={placeholder}
         onSubmit={handleSubmit}  
