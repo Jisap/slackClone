@@ -5,6 +5,7 @@ import { useWorkspaceId } from '@/hooks/use-workspace-id';
 import dynamic from 'next/dynamic'
 import Quill from 'quill';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 const Editor = dynamic(() => import('@/components/editor'), { ssr: false }); // Carga el componente Editor de forma dinámica y desactiva el renderizado del lado del servidor (SSR) para este componente.
 
@@ -15,6 +16,7 @@ interface ChatInputProps {
 export const ChatInput = ({ placeholder }: ChatInputProps) => {
 
   const [editorKey, setEditorKey] = useState(0);
+  const [isPending, setIsPending] = useState(false);
 
   const editorRef = useRef<Quill | null>(null);
 
@@ -24,10 +26,20 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
   const { mutate: createMessage } = useCreateMessage();
 
   // callback para el evento submit del formulario
-  const handleSubmit = ({ body, image }: {body: string, image: File | null}) => { // Extraemos de la petición el cuerpo del mensaje y la imagen asociada
-    console.log(body, image);
-    createMessage({ body, workspaceId, channelId }); // Llamamos a la mutation de convex para crear el mensaje
-    setEditorKey((prevKey) => prevKey + 1);          // Incrementamos el contador de mensajes -> provoca que el editor se actualice al actualizar el estado del componente
+  const handleSubmit = async({ body, image }: {body: string, image: File | null}) => { // Extraemos de la petición el cuerpo del mensaje y la imagen asociada
+    try {
+      setIsPending(true);
+      await createMessage({                            // Llamamos a la mutation de convex para crear el mensaje
+        body, 
+        workspaceId, 
+        channelId 
+      }, { throwError: true });                        // Se lanza un error si ocurre algún error
+      setEditorKey((prevKey) => prevKey + 1);          // Incrementamos el contador de mensajes -> provoca que el editor se actualice al actualizar el estado del componente -> limpia el contenido del editor
+    } catch (error) {
+      toast.error("Failed to create message");
+    }finally{
+      setIsPending(false);
+    }
   }
 
   return (
@@ -37,7 +49,7 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
         variant="create"
         placeHolder={placeholder}
         onSubmit={handleSubmit}  
-        disabled={false}
+        disabled={isPending}
         innerRef={editorRef} // ref al componente <Editor />
       />
     </div>
