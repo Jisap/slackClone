@@ -19,9 +19,9 @@ const getMember = async(
 
 export const create = mutation({
   args: {
-    body: v.string(),
+    body: v.string(),                             // Obligatorio
     image: v.optional(v.id("_storage")),
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.id("workspaces"),              // Obligatorio
     channelId: v.optional(v.id("channels")),
     parentMessageId: v.optional(v.id("messages")),
     //TODO: add conversationId
@@ -39,7 +39,7 @@ export const create = mutation({
 
     //TODO: Handle conversationId
 
-    const messageId = await ctx.db.insert("messages", {
+    const messageId = await ctx.db.insert("messages", {  // Inserta en la tabla messages
       memberId: member._id,                              // Se incorpora el miembro al mensaje desde el getter getMember
       body: args.body,                                   // Se incorpora el cuerpo del mensaje desde el formulario
       image: args.image,                                 // Se incorpora la imagen del mensaje desde el formulario

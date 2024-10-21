@@ -21,9 +21,10 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
 
   const { mutate: createMessage } = useCreateMessage();
 
-  const handleSubmit = ({ body, image}: {body: string, image: File | null}) => { // 
+  // callback para el evento submit del formulario
+  const handleSubmit = ({ body, image }: {body: string, image: File | null}) => { // Extraemos de la petición el cuerpo del mensaje y la imagen asociada
     console.log(body, image);
-    createMessage({ body, workspaceId, channelId });
+    createMessage({ body, workspaceId, channelId }); // Llamamos a la mutation de convex para crear el mensaje
   }
 
   return (

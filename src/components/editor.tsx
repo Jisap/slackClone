@@ -83,9 +83,11 @@ const Editor = ({
           bindings: {
             enter: {
               key: "Enter",
-              handler: () => { // Submit del formulario
+              // Comportamiento de la tecla enter
+              handler: () => { 
                 const text = quill.getText();
                 const addedImage = imageElementRef.current?.files?.[0] || null;
+                
                 const isEmpty = !addedImage && text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
                 if(isEmpty) return;
 
@@ -94,7 +96,8 @@ const Editor = ({
                 return 
               }
             },
-            shift_enter: {
+            // Comportamiento de la tecla shift + enter
+            shift_enter: { 
               key: "Enter",
               shiftKey: true,
               handler: () => {
@@ -219,7 +222,7 @@ const Editor = ({
               disabled={disabled}
               variant='ghost'
               size="iconSm"
-              onClick={() => imageElementRef.current?.click()} // click en el input de imagen -> setImage
+              onClick={() => imageElementRef.current?.click()} // click en el input de imagen -> onChange -> setImage
             >
               <ImageIcon className='size-4' />
             </Button>
@@ -239,7 +242,7 @@ const Editor = ({
               disabled={disabled || isEmpty}
               size="sm"
                 onClick={() => {
-                  onSubmit({
+                  onSubmit({                                               // Llama a la función de callback onSubmit cuando se hace click
                     body: JSON.stringify(quillRef.current?.getContents()), // Obtiene el contenido del editor como un string JSON. desde la ref de quill
                     image,                                                 // Obtiene el archivo de imagen si está presente
                   })

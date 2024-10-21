@@ -12,7 +12,7 @@ type RequestType = {                              // Tipado de los argumentos de
   parentMessageId?: Id<"messages">,
   //TODO: add conversationId
 };   
-type ResponseType = Id<"messages"> | null;      // Tipado de respuesta esperado (un ID de workspace o null).
+type ResponseType = Id<"messages"> | null;        // Tipado de respuesta esperado (un ID de workspace o null).
 
 type Options = {                                  // Tipado de la funciones que se pueden pasar tras ejecutar la mutación, definidas en el modal
   onSuccess?: (data: ResponseType) => void;
