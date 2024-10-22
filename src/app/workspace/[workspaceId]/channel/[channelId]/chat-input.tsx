@@ -67,10 +67,10 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
 
         const { storageId } = await result.json();                     // Obtenemos el ID de la imagen subida
 
-        values.image = storageId;                                      // Se actualiza el valor de la imagen
+        values.image = storageId;                                      // Se actualiza el valor de la imagen en el mensaje
       }
 
-      await createMessage(                             // Llamamos a la mutation de convex para crear el mensaje
+      await createMessage(                             // Llamamos a la mutation de convex para crear el mensaje con los values actualizados
         values
       , { throwError: true });                         // Se lanza un error si ocurre algún error
       setEditorKey((prevKey) => prevKey + 1);          // Incrementamos el contador de mensajes -> provoca que el editor se actualice al actualizar el estado del componente -> limpia el contenido del editor
