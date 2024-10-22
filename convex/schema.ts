@@ -6,11 +6,13 @@ import { v } from "convex/values";
 
 const schema = defineSchema({
   ...authTables,
+
   workspaces: defineTable({                                      // Tabla para almacenar los workspaces
     name: v.string(),
     userId: v.id("users"),
     joinCode: v.string(),
   }),
+
   members: defineTable({                                          // Tabla para almacenar los roles de los miembros de un workspace
     userId: v.id("users"),                                        // Id del usuario que es miembro del workspace
     workspaceId: v.id("workspaces"),                              // Id del workspace del que son miembros los usuarios
@@ -51,7 +53,17 @@ const schema = defineSchema({
       "channelId",
       "parentMessageId",
       "conversationId", 
-    ])
+    ]),
+    
+  reactions: defineTable({
+    workspaceId: v.id("workspaces"),
+    messageId: v.id("messages"),
+    memberId: v.id("members"),
+    value: v.string()
+  })
+    .index("by_workspace_id", ["workspaceId"])
+    .index("by_message_id", ["messageId"])
+    .index("by_member_id", ["memberId"])
 })
 
 export default schema;

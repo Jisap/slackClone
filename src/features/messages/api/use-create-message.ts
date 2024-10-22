@@ -10,7 +10,7 @@ type RequestType = {                              // Tipado de los argumentos de
   workspaceId: Id<"workspaces">,
   channelId?: Id<"channels">,
   parentMessageId?: Id<"messages">,
-  //TODO: add conversationId
+  conversationId?: Id<"conversations">
 };   
 type ResponseType = Id<"messages"> | null;        // Tipado de respuesta esperado (un ID de workspace o null).
 
