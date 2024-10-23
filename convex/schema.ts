@@ -49,6 +49,7 @@ const schema = defineSchema({
     .index("by_member_id", ["memberId"])                          // Permite buscar todos los mensajes enviados por un miembro específico.
     .index("by_channel_id", ["channelId"])                        // Permite buscar mensajes dentro de un canal específico en un workspace
     .index("by_conversation_id", ["conversationId"])              // Permite buscar todos los mensajes de una conversación específica.
+    .index("by_parent_message_id", ["parentMessageId"])           // Permite buscar mensajes que son respuestas a otro mensaje.
     .index("by_channel_id_parent_message_id_conversation", [
       "channelId",
       "parentMessageId",
