@@ -43,7 +43,7 @@ const schema = defineSchema({
     channelId: v.optional(v.id("channels")),                      // Id del channel al que pertenece el mensaje (mensajes públicos)
     parentMessageId: v.optional(v.id("messages")),                // Id del mensaje padre al que pertenece el mensaje
     conversationId: v.optional(v.id("conversations")),            // Id de la conversación al que pertenece el mensaje (mensajes privados)
-    updatedAt: v.number(),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_workspace_id", ["workspaceId"])                    // Permite buscar todos los mensajes en un workspace.
     .index("by_member_id", ["memberId"])                          // Permite buscar todos los mensajes enviados por un miembro específico.
