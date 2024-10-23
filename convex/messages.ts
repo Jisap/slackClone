@@ -1,9 +1,10 @@
 import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 import { timeStamp } from "console";
 import { paginationOptsValidator } from "convex/server";
+import { existsSync } from "fs";
 
 const populateUser = (ctx: QueryCtx, userId: Id<"users">) => { // Busca un registro específico utilizando el ID proporcionado.
   return ctx.db.get(userId)
@@ -111,7 +112,73 @@ export const get = query({ // Endpoint para manejar la recuperación de mensajes
         .order("desc")
         .paginate(args.paginationOpts)
 
-    return results // Finalmente, se devuelven los resultados paginados de la consulta a la tabla "messages"
+    return {
+      ...results,
+      page: (
+        await Promise.all(
+          results.page.map(async(message) => {                                  // Para cada mensaje s
+            const member = await populateMember(ctx, message.memberId)          // se busca el member asociado
+            const user = member ? await populateUser(ctx, member.userId) : null // y desde este, el usuario correspondiente a ese member
+            
+            if(!member || !user) {
+              return null
+            }
+
+            const reactions = await populateReactions(ctx, message._id);        // Se recuperan las reacciones asociadas al mensaje
+            const thread = await populateThread(ctx, message._id);              // Obtiene información del hilo si existe
+            const image = message.image                                         // Se obtienen la URLs de las imagenes si existen
+              ? await ctx.storage.getUrl(message.image)
+              : undefined
+
+            const reactionsWithCounts = reactions.map((reaction) => {           // Cuenta cuántas veces aparece cada tipo de reacción. 
+              return {
+                ...reaction,
+                count: reactions.filter((r) => r.value === reaction.value).length, // Esto crea duplicados en los conteos de los values
+              }
+            })
+
+            const dedupedReactions = reactionsWithCounts.reduce(                // Se procede a eliminar los duplicados
+              (acc, reaction) => {                                                   
+                const existingReaction = acc.find(                              // 1. Busca si ya existe una reacción con el mismo valor (emoji)
+                  (r) => r.value === reaction.value                             // Dentro del acc se busca un value que = reaction que se itera
+                );
+
+                if (existingReaction) {                                         // 2. Si existe, actualiza la lista de memberIds          
+                  existingReaction.memberIds = Array.from(                      // creando un nuevo array
+                    new Set([...existingReaction.memberIds, reaction.memberId]) // donde solo se actualiza la lista de los membersId que dieron el mismo value
+                  )
+                } else {
+                  acc.push({ ...reaction, memberIds: [reaction.memberId] })     // 3. Si no existe, añade la nueva reacción
+                }
+
+                return acc // Se devuelve el acc correspondiente a las reacciones sin duplicados
+              },
+              [] as (Doc<"reactions"> & { 
+                count: number;
+                memberIds: Id<"members">[]
+              })[]
+            )
+
+            const reactionsWithoutMemberIdProperty = dedupedReactions.map(      // Finalmente, se eliminan los memberId individuales ya que ya tenemos la lista completa en memberIds rdo de la deduplicación
+              ({memberId, ...rest}) => rest
+            )
+
+            return {
+              ...message,
+              image,
+              user,
+              reactions: reactionsWithoutMemberIdProperty,
+              threadCount: thread.count,
+              threadImage: thread.image,
+              threadTimestamp: thread.timeStamp
+            }
+          })
+        )
+      ).filter(
+        (message): message is NonNullable<typeof message> => message !== null   // Elimina todos los mensajes que son null del array resultante 
+      )
+
+    }
   }
 })
 
