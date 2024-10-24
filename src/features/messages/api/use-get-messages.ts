@@ -10,7 +10,7 @@ interface UseGetMessagesProps {
   parentMessageId?: Id<'messages'>
 }
 
-export type GetMessagesReturnType = typeof api.messages.get._returnType["page"]; // Retorno de la consulta a la tabla messages
+export type GetMessagesReturnType = typeof api.messages.get._returnType["page"]; // Tipo del retorno de la consulta a la tabla messages
 
 export const useGetMessages = ({ channelId, conversationId, parentMessageId }: UseGetMessagesProps) => {
   const { results, status, loadMore } = usePaginatedQuery(
