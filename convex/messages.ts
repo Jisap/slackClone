@@ -133,9 +133,23 @@ export const get = query({ // Endpoint para manejar la recuperación de mensajes
             const reactionsWithCounts = reactions.map((reaction) => {           // Cuenta cuántas veces aparece cada tipo de reacción. 
               return {
                 ...reaction,
-                count: reactions.filter((r) => r.value === reaction.value).length, // Esto crea duplicados en los conteos de los values
+                count: reactions.filter((r) => r.value === reaction.value).length, // Esto crea duplicados en los conteos de los values 
               }
             })
+
+            // Si tenemos estas reacciones:
+            // reactions = [
+            //   { value: "👍", memberId: "user1" },
+            //   { value: "👍", memberId: "user2" },
+            //   { value: "❤️", memberId: "user3" }
+            // ]
+
+            // Después del map tendremos:
+            // reactionsWithCounts = [
+            //   { value: "👍", memberId: "user1", count: 2 }, // 👍 aparece 2 veces
+            //   { value: "👍", memberId: "user2", count: 2 }, // 👍 aparece 2 veces
+            //   { value: "❤️", memberId: "user3", count: 1 }  // ❤️ aparece 1 vez
+            // ]
 
             const dedupedReactions = reactionsWithCounts.reduce(                // Se procede a eliminar los duplicados
               (acc, reaction) => {                                                   
@@ -145,7 +159,7 @@ export const get = query({ // Endpoint para manejar la recuperación de mensajes
 
                 if (existingReaction) {                                         // 2. Si existe, actualiza la lista de memberIds          
                   existingReaction.memberIds = Array.from(                      // creando un nuevo array
-                    new Set([...existingReaction.memberIds, reaction.memberId]) // donde solo se actualiza la lista de los membersId que dieron el mismo value
+                    new Set([...existingReaction.memberIds, reaction.memberId]) // donde solo se actualiza la lista de los membersIds que dieron el mismo value
                   )
                 } else {
                   acc.push({ ...reaction, memberIds: [reaction.memberId] })     // 3. Si no existe, añade la nueva reacción
