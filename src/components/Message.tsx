@@ -96,8 +96,24 @@ export const Message = ({
             </AvatarFallback>
           </Avatar>
         </button>
+        <div className="flex flex-col w-full overflow-hidden">
+          <div className="text-sm">
+            <button 
+              onClick={() => {}}  
+              className="font-bold text-primary hover:underline"
+            >
+              {authorName}
+            </button>
+            <span>&nbsp;&nbsp;</span>
+            <Hint label={formatFullTime(new Date(createdAt))}>
+              <button className="text-xs text-muted-foreground hover:underline">
+                {format(new Date(createdAt), "h:mm a")}
+              </button>
+            </Hint>
+          </div>
+          <Renderer value={body} /> 
+        </div>
       </div>
-      <Renderer value={body} />
     </div>
   )
 }
