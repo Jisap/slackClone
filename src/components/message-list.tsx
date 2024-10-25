@@ -2,8 +2,10 @@ import { GetMessagesReturnType } from "@/features/messages/api/use-get-messages"
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import { Message } from "./Message";
 
-const TIME_THRESHOLD = 5;
-
+const TIME_THRESHOLD = 5; // Representa el umbral de tiempo máximo entre dos mensajes consecutivos para considerarlos "compactos"
+                          // (es decir, que pertenezcan a la misma "burbuja de conversación").
+                          
+                          
 interface MessageListProps {
   memberName?: string;
   memberImage?: string;
@@ -72,13 +74,13 @@ export const MessageList = ({
           {messages.map((message, index) => {
             
             const prevMessage = messages[index - 1];
-            const isCompact = 
-              prevMessage &&
-              prevMessage.user?._id === message.user?._id &&
-              differenceInMinutes(
+            const isCompact =                                   // booleano que indica si los mensajes son "compactos" o no
+              prevMessage &&                                    // si hay un mensaje anterior y    
+              prevMessage.user?._id === message.user?._id &&    // si el mensaje anterior pertenece al mismo usuario que crea el último mensaje
+              differenceInMinutes(                              // se comprueba que la diferencia de tiempo entre ambos mensajes es menor a TIME_THRESHOLD.
                 new Date(message._creationTime),
                 new Date(prevMessage._creationTime)      
-              ) < TIME_THRESHOLD;
+              ) < TIME_THRESHOLD;                               // Si las condiciones se cumplen se devuelve true -> isCompact = true
             
             return (
               <Message 
