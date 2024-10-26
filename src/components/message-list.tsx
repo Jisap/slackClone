@@ -2,6 +2,10 @@ import { GetMessagesReturnType } from "@/features/messages/api/use-get-messages"
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import { Message } from "./Message";
 import { ChannelHero } from "./ChannelHero";
+import { Id } from "../../convex/_generated/dataModel";
+import { use, useState } from "react";
+import { useWorkspaceId } from "@/hooks/use-workspace-id";
+import { useCurrentMember } from "@/features/members/api/use-current-member";
 
 const TIME_THRESHOLD = 5; // Representa el umbral de tiempo máximo entre dos mensajes consecutivos para considerarlos "compactos"
                           // (es decir, que pertenezcan a la misma "burbuja de conversación").
@@ -37,6 +41,11 @@ export const MessageList = ({
   isLoadingMore,
   canLoadMore,  
 }: MessageListProps) => {
+
+  const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
+
+  const workspaceId = useWorkspaceId();
+  const { data: currentMember } = useCurrentMember({ workspaceId });
 
   const groupedMessages = data?.reduce( // Mensajes agrupados por fechas
     (groups, message) => {
@@ -90,16 +99,16 @@ export const MessageList = ({
                 memberId={message.memberId}
                 authorImage={message.user.image}
                 authorName={message.user.name}
-                isAuthor={false}
+                isAuthor={message.memberId === currentMember?._id}
                 reactions={message.reactions}
                 body={message.body}
                 image={message.image}
                 updatedAt={message.updatedAt}
                 createdAt={message._creationTime}
-                isEditing={false}
-                setEditingId={() => {}}
+                isEditing={editingId === message._id}
+                setEditingId={setEditingId}
                 isCompact={isCompact}
-                hideThreadButton={false}
+                hideThreadButton={variant === "thread"}
                 threadCount={message.threadCount}
                 threadImage={message.threadImage}
                 threadTimestamp={message.threadTimestamp}
