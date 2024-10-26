@@ -1,6 +1,7 @@
 import { GetMessagesReturnType } from "@/features/messages/api/use-get-messages";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import { Message } from "./Message";
+import { ChannelHero } from "./ChannelHero";
 
 const TIME_THRESHOLD = 5; // Representa el umbral de tiempo máximo entre dos mensajes consecutivos para considerarlos "compactos"
                           // (es decir, que pertenezcan a la misma "burbuja de conversación").
@@ -30,7 +31,7 @@ export const MessageList = ({
   memberImage,
   channelName,
   channelCreationTime,
-  variant,
+  variant="channel",
   data,
   loadMore,
   isLoadingMore,
@@ -107,6 +108,12 @@ export const MessageList = ({
           })}
         </div>
      ))}
+     {variant === "channel" && channelName && channelCreationTime && (
+      <ChannelHero 
+        name={channelName}
+        creationTime={channelCreationTime}
+      />
+     )}
     </div>
   )
 }
