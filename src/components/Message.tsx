@@ -3,6 +3,7 @@ import { Doc, Id } from "../../convex/_generated/dataModel"
 import { format, isToday, isYesterday } from "date-fns";
 import { Hint } from "./hint";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Thumbnail } from "./Thumbnail";
 
 
 
@@ -76,6 +77,7 @@ export const Message = ({
           </Hint>
           <div className="flex flex-col w-full">
             <Renderer value={body}/>
+            <Thumbnail url={image} />
             {updatedAt ? (
               <span className="text-xs text-muted-foreground">
                 (edited)
@@ -93,12 +95,11 @@ export const Message = ({
     <div className="flex flex-col gap-2 p-1.5 px-5 hover:bg-gray-100/60 group relative">
       <div className="flex items-start gap-2">
         <button>
-          <Avatar className="size-5 rounded-md mr-1">
+          <Avatar>
             <AvatarImage 
-              className="rounded-md"
               src={authorImage} 
             />
-            <AvatarFallback className="rounded-md bg-sky-500 text-white text-xs">
+            <AvatarFallback>
               {avatarFallback}
             </AvatarFallback>
           </Avatar>
@@ -119,6 +120,7 @@ export const Message = ({
             </Hint>
           </div>
           <Renderer value={body} /> 
+          <Thumbnail url={image} />
           {updatedAt ? (
             <span className="text-xs text-muted-foreground">(edited)</span>
           ): null }
