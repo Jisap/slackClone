@@ -4,6 +4,7 @@ import { format, isToday, isYesterday } from "date-fns";
 import { Hint } from "./hint";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Thumbnail } from "./Thumbnail";
+import { Toolbar } from "./toolbar";
 
 
 
@@ -126,6 +127,17 @@ export const Message = ({
           ): null }
         </div>
       </div>
+      {!isEditing && (
+        <Toolbar
+          isAuthor={isAuthor}
+          isPending={false}
+          handleEdit={() => setEditingId(id)}
+          handleThread={() => {}}
+          handleDelete={() => {}}
+          handleReaction={() => {}}
+          hidethreadButton={hideThreadButton}
+        />
+      )}
     </div>
   )
 }
