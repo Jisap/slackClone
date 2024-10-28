@@ -160,6 +160,7 @@ const Editor = ({
 
   return (
     <div className='flex flex-col'>
+      {/* btn oculto para agregar imagen */}
       <input 
         type="file" 
         accept='image/*'
@@ -167,15 +168,21 @@ const Editor = ({
         onChange={(event) =>  setImage(event.target.files![0])}
         className='hidden'
       />
+
+      {/* div principal del editor */}
       <div className={
         cn(
           'flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white',
           disabled && 'opacity-50'
         )}>
+
+        {/* Container del editor Quill */}
         <div 
           ref={containerRef}
           className='h-full ql-custom'  
         />
+
+        {/* Div para mostrar la imagen */}
         {!!image && (
           <div className='p-2'>
             <div className='relative size-[62px] flex items-center justify-center group/image'>
@@ -200,84 +207,88 @@ const Editor = ({
             </div>
           </div>
         )}
+
+        {/* Botones de ocultar/mostrar el editor, emojis, imagen y submit */}
         <div className='flex px-2 pb-2 z-[5]'>
-        <Hint label={isToolbarVisible ? "Hide formatting" : "Show formatting"}>
-          <Button
-            disabled={disabled}
-            variant='ghost'
-            size="iconSm"
-            onClick={toggleToolbar}
-          >
-            <PiTextAa className='size-4' />
-          </Button>
-        </Hint>
-        <EmojiPopover onEmojiSelect={onEmojiSelect}>
-          <Button
-            disabled={disabled}
-            variant='ghost'
-            size="iconSm"
-          >
-            <Smile className='size-4' />
-          </Button>
-      </EmojiPopover>
-        {variant === "create" && (
-          <Hint label="Image">
+          <Hint label={isToolbarVisible ? "Hide formatting" : "Show formatting"}>
             <Button
               disabled={disabled}
               variant='ghost'
               size="iconSm"
-              onClick={() => imageElementRef.current?.click()} // click en el input de imagen -> onChange -> setImage
+              onClick={toggleToolbar}
             >
-              <ImageIcon className='size-4' />
+              <PiTextAa className='size-4' />
             </Button>
           </Hint>
-        )}
-        {variant === "update" && (
-          <div className='ml-auto flex items-center gap-x-2'>
+          <EmojiPopover onEmojiSelect={onEmojiSelect}>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={onCancel}
               disabled={disabled}
+              variant='ghost'
+              size="iconSm"
             >
-              Cancel
+              <Smile className='size-4' />
             </Button>
+          </EmojiPopover>
+          
+          {variant === "create" && (
+            <Hint label="Image">
+              <Button
+                disabled={disabled}
+                variant='ghost'
+                size="iconSm"
+                onClick={() => imageElementRef.current?.click()} // click en el input de imagen -> onChange -> setImage
+              >
+                <ImageIcon className='size-4' />
+              </Button>
+            </Hint>
+          )}
+        
+          {variant === "update" && (
+            <div className='ml-auto flex items-center gap-x-2'>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onCancel}
+                disabled={disabled}
+              >
+                Cancel
+              </Button>
+              <Button
+                disabled={disabled || isEmpty}
+                size="sm"
+                  onClick={() => {
+                    onSubmit({                                               // Llama a la función de callback onSubmit cuando se hace click
+                      body: JSON.stringify(quillRef.current?.getContents()), // Obtiene el contenido del editor como un string JSON. desde la ref de quill
+                      image,                                                 // Obtiene el archivo de imagen si está presente
+                    })
+                  }}
+                className='bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
+              >
+                Save
+              </Button>
+            </div>
+          )}
+
+          {variant === "create" && (
             <Button
               disabled={disabled || isEmpty}
-              size="sm"
-                onClick={() => {
-                  onSubmit({                                               // Llama a la función de callback onSubmit cuando se hace click
-                    body: JSON.stringify(quillRef.current?.getContents()), // Obtiene el contenido del editor como un string JSON. desde la ref de quill
-                    image,                                                 // Obtiene el archivo de imagen si está presente
-                  })
-                }}
-              className='bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
+              onClick={() => {
+                onSubmit({ 
+                  body: JSON.stringify(quillRef.current?.getContents()), 
+                  image,
+                })
+              }}
+              size="iconSm"
+              className={cn(
+                'ml-auto', 
+                isEmpty 
+                  ? 'bg-white hover:bg-white text-muted-foreground'
+                  : 'bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
+              )}
             >
-              Save
+              <MdSend className='size-4' />
             </Button>
-          </div>
-        )}
-        {variant === "create" && (
-          <Button
-            disabled={disabled || isEmpty}
-            onClick={() => {
-              onSubmit({ 
-                body: JSON.stringify(quillRef.current?.getContents()), 
-                image,
-              })
-            }}
-            size="iconSm"
-            className={cn(
-              'ml-auto', 
-              isEmpty 
-                ? 'bg-white hover:bg-white text-muted-foreground'
-                : 'bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
-            )}
-          >
-            <MdSend className='size-4' />
-          </Button>
-        )}
-        
+          )}      
         </div>     
       </div>
 

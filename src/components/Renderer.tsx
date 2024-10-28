@@ -8,7 +8,7 @@ interface RendererProps {
 }
 
 
-const Renderer = ({ value }:RendererProps) => {
+const Renderer = ({ value }:RendererProps) => { // Componente que muestra el contenido de un mensaje en formato HTML
   
   const [isEmpty, setIsEmpty] = useState(false);
   const rendererRef = useRef<HTMLDivElement>(null);

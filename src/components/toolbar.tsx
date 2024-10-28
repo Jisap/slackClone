@@ -13,7 +13,7 @@ interface ToolbarProps {
   hidethreadButton?: boolean;
 }
 
-export const Toolbar = ({
+export const Toolbar = ({ // Componente que muestra los botones de acciones en el mensaje
   isAuthor, 
   isPending, 
   handleEdit, 
@@ -44,6 +44,7 @@ export const Toolbar = ({
               variant="ghost"
               size="iconSm"
               disabled={isPending}
+              onClick={handleThread}
             >
               <MessageSquareTextIcon className="size-4" />
             </Button>
@@ -56,6 +57,7 @@ export const Toolbar = ({
               variant="ghost"
               size="iconSm"
               disabled={isPending}
+              onClick={handleEdit} // Establece el estado editingId en el mensaje actual -> MessageList (isEditing={editingId === message._id}) -> Message renderizara o no el éditor
             >
               <Pencil className="size-4" />
             </Button>
@@ -68,6 +70,7 @@ export const Toolbar = ({
               variant="ghost"
               size="iconSm"
               disabled={isPending}
+              onClick={handleDelete}
             >
               <Trash className="size-4" />
             </Button>

@@ -16,7 +16,7 @@ interface ThumbnailProps {
   url: string | null | undefined;
 }
 
-export const Thumbnail = ({url}: ThumbnailProps) => {
+export const Thumbnail = ({url}: ThumbnailProps) => { // Componente que muestra una imagen en un mensaje si existe
   if(!url) return null;
 
   return (
