@@ -5,7 +5,6 @@ import { Doc, Id } from '../../../../convex/_generated/dataModel';
 
 
 type RequestType = {                              // Tipado de los argumentos de la mutation de convex
-  body: string;
   id: Id<"messages"> 
 };   
 type ResponseType = Id<"messages"> | null;        // Tipado de respuesta esperado (un ID de workspace o null).
@@ -18,7 +17,7 @@ type Options = {                                  // Tipado de la funciones que 
 }
 
 
-export const useUpdateMessage = () => { // Hook para actualizar un message
+export const useRemoveMessage = () => { // Hook para borrar un message
 
   const [data, setData] = useState<ResponseType>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -30,7 +29,7 @@ export const useUpdateMessage = () => { // Hook para actualizar un message
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const mutation = useMutation(api.messages.update) // Definición de la mutation de la api de convex para actualizar un message
+  const mutation = useMutation(api.messages.remove) // Definición de la mutation de la api de convex para borrar un message
 
   const mutate = useCallback(async (values: RequestType, options?: Options) => { // Ejecución de la mutation -> callbacks
     try {
@@ -39,7 +38,7 @@ export const useUpdateMessage = () => { // Hook para actualizar un message
       setError(null);
       setStatus("pending")
 
-      const response = await mutation(values);       // Cuando se usa la mutation en el modal, se pasa el id del message que se quiere actualizar y el body con la actualización
+      const response = await mutation(values);       // Cuando se usa la mutation en el modal, se pasa el id del message que se quiere borrar
       options?.onSuccess?.(response)                 // Si se obtuvo una respuesta, se ejecuta la función de onSuccess definida en el modal con dicha respuesta
       return response
 

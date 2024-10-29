@@ -9,6 +9,8 @@ import { useUpdateMessage } from "@/features/messages/api/use-update-message";
 import { update } from '../../convex/messages';
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useRemoveMessage } from "@/features/messages/api/use-remove-message";
+import { useConfirm } from "@/hooks/use-confirm";
 
 
 
@@ -71,7 +73,13 @@ export const Message = ({
   threadTimestamp,
 }: MessageProps) => {
 
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Delete Message",
+    "Are you sure you want to delete this message? This cannot be undone.",
+  );
+
   const { mutate: updateMessage, isPending: isUpdatingMessage } = useUpdateMessage();
+  const { mutate: removeMessage, isPending: isRemovingMessage } = useRemoveMessage();
 
   const isPending = isUpdatingMessage;
 
@@ -85,6 +93,21 @@ export const Message = ({
         toast.error("Failed to update message");
       }
     });
+  }
+
+  const handleRemove = async() => {
+    const ok = await confirm();
+    if (!ok) return;
+
+    removeMessage({ id }, {
+      onSuccess: () => {
+        toast.success("Message deleted")
+        // TODO: Close thread if opened.
+      },
+      onError: () => {
+        toast.error("Failed to delete message");
+      },
+    })
   }
 
   // Formato compacto si los mensajes se encuentran en la misma "burbuja de conversación" (según el timestamp)
@@ -130,7 +153,7 @@ export const Message = ({
             isPending={isPending}
             handleEdit={() => setEditingId(id)}
             handleThread={() => { }}
-            handleDelete={() => { }}
+            handleDelete={handleRemove}
             handleReaction={() => { }}
             hidethreadButton={hideThreadButton}
           />
@@ -198,7 +221,7 @@ export const Message = ({
           isPending={isPending}
           handleEdit={() => setEditingId(id)}
           handleThread={() => {}}
-          handleDelete={() => {}}
+          handleDelete={handleRemove}
           handleReaction={() => {}}
           hidethreadButton={hideThreadButton}
         />
