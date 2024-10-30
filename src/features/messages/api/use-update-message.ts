@@ -8,7 +8,7 @@ type RequestType = {                              // Tipado de los argumentos de
   body: string;
   id: Id<"messages"> 
 };   
-type ResponseType = Id<"messages"> | null;        // Tipado de respuesta esperado (un ID de workspace o null).
+type ResponseType = Id<"messages"> | null;        // Tipado de respuesta esperado (un ID de message o null).
 
 type Options = {                                  // Tipado de la funciones que se pueden pasar tras ejecutar la mutación, definidas en el modal
   onSuccess?: (data: ResponseType) => void;
