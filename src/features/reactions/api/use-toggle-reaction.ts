@@ -30,7 +30,7 @@ export const useToggleReaction = () => { // Hook para alternar (agregar o elimin
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const mutation = useMutation(api.reactions.toggle) // Definición de la mutation de la api de convex para crear un message
+  const mutation = useMutation(api.reactions.toggle) // Definición de la mutation de la api de convex para crear una reaction
 
   const mutate = useCallback(async (values: RequestType, options?: Options) => { // Ejecución de la mutation -> callbacks
     try {
@@ -49,7 +49,7 @@ export const useToggleReaction = () => { // Hook para alternar (agregar o elimin
       if (options?.throwError) {                     // Si throwError=true  se lanza un throw error que será recogido por el catch del modal al usar la mutation
         throw error;
       }
-    } finally {                                        // Finalmente, se ejecuta la función de onSettled definida en el modal
+    } finally {                                      // Finalmente, se ejecuta la función de onSettled definida en el modal
       setStatus("settled")
       options?.onSettled?.()
     }
