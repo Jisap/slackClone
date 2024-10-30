@@ -11,8 +11,8 @@ const populateUser = (ctx: QueryCtx, id: Id<"users">) => {                  // F
 export const current = query({                                              // Query para obtener el miembro actualmente logueado del workspace
   args: { workspaceId: v.id("workspaces") },
   handler: async(ctx, args) => {
-    const userId = await getAuthUserId(ctx);
     
+    const userId = await getAuthUserId(ctx);
     if(!userId) {
       return null;
     }

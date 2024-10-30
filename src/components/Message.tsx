@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 import { useRemoveMessage } from "@/features/messages/api/use-remove-message";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useToggleReaction } from "@/features/reactions/api/use-toggle-reaction";
-import Reactions from "./Reactions";
+import Reactions from "./reactions";
+
 
 
 
@@ -157,7 +158,7 @@ export const Message = ({
                     (edited)
                   </span>
                 ) : null}
-                <Reactions 
+                <Reactions
                   data={reactions}
                   onChange={handleReaction}
                 />
