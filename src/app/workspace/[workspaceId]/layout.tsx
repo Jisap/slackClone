@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/resizable"
 import { WorkspaceSidebar } from './workspace-sidebar';
 import { usePanel } from '@/hooks/use-panel';
+import { Loader } from 'lucide-react';
 
 
 
@@ -52,7 +53,14 @@ const WorkspaceIdLayout = ({ children }: WorkspaceIdLayoutProps) => {
             <>
               <ResizableHandle withHandle />
               <ResizablePanel minSize={20} defaultSize={29}>
-                Load thread
+                {parentMessageId ? (
+                  <div>Thread</div>
+                ) : (
+                  <div className='flex h-full items-center justify-center'>
+                    <Loader className="animate-spin size-5 text-muted-foreground"/>
+                  </div>
+
+                )}
               </ResizablePanel>
             </>
           )}
