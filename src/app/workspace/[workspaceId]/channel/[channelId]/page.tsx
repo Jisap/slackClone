@@ -11,13 +11,13 @@ import { MessageList } from "@/components/message-list";
 
 const ChannelIdPage = () => {
 
-  const channelId = useChannelId();                  // Obtenemos el id del channel contenido en los params
+  const channelId = useChannelId();                 // Obtenemos el id del channel contenido en los params
 
   const { 
     results,
-    status,
-    loadMore
-   } = useGetMessages({ channelId });                // Obtenemos los mensajes del channel
+    status,  // estado de la consulta
+    loadMore // carga la siguiente pág de rdos
+  } = useGetMessages({ channelId });                // Obtenemos los mensajes del channel así como el status y loadMore desde usePaginatedQuery
 
   const { 
     data: channel, 
@@ -51,8 +51,8 @@ const ChannelIdPage = () => {
         channelCreationTime={channel._creationTime}
         data={results}
         loadMore={loadMore}
-        isLoadingMore={status === "LoadingMore"}
-        canLoadMore={status === "CanLoadMore"}
+        isLoadingMore={status === "LoadingMore"} // isLoadingMore depende del status de la consulta
+        canLoadMore={status === "CanLoadMore"}   // al igual que canLoadMore 
       />
       <ChatInput
         placeholder={`Message # ${channel.name}`}
