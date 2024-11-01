@@ -23,17 +23,17 @@ export const toggle = mutation({ // Este endpoint tiene la finalidad de alternar
     value: v.string()
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await getAuthUserId(ctx); // Obtenemos el ID del usuario autenticado
     if (!userId) {
       throw new Error("Unauthorized");
     }
 
-    const message = await ctx.db.get(args.messageId);
+    const message = await ctx.db.get(args.messageId); // Obtenemos el mensaje especificado en los argumentos
     if(!message) {
       throw new Error("Message not found");
     }
 
-    const member = await getMember(ctx, message.workspaceId, userId);
+    const member = await getMember(ctx, message.workspaceId, userId); // Obtenemos el miembro correspondiente al mensaje y al usuario autenticado
     if(!member) {
       throw new Error("Member not found");
     }

@@ -8,7 +8,7 @@ type RequestType = {                              // Tipado de los argumentos de
   value: string,
   messageId: Id<"messages">
 };   
-type ResponseType = Id<"reactions"> | null;        // Tipado de respuesta esperado (un ID de reactions o null).
+type ResponseType = Id<"reactions"> | null;       // Tipado de respuesta esperado (un ID de reactions o null).
 
 type Options = {                                  // Tipado de la funciones que se pueden pasar tras ejecutar la mutación, definidas en el modal
   onSuccess?: (data: ResponseType) => void;
@@ -30,7 +30,7 @@ export const useToggleReaction = () => { // Hook para alternar (agregar o elimin
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const mutation = useMutation(api.reactions.toggle) // Definición de la mutation de la api de convex para crear una reaction
+  const mutation = useMutation(api.reactions.toggle) // Definición de la mutation de la api de convex para crear/elimiminar una reaction
 
   const mutate = useCallback(async (values: RequestType, options?: Options) => { // Ejecución de la mutation -> callbacks
     try {

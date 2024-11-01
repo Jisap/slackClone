@@ -77,7 +77,11 @@ export const Message = ({
   threadTimestamp,
 }: MessageProps) => {
 
-  const { onOpenMessage, onClose, parentMessageId } = usePanel()
+  const { 
+    onOpenMessage,                                                 // Actualiza el valor de parentMessageId en la Url
+    onClose,                                                       // Establece el parentMessageId en null -> layout -> cierra el panel de threads
+    parentMessageId                                                // Obtiene el valor de parentMessageId desde la url -> layout -> muestra el panel de threads
+  } = usePanel();                      
 
   const [ConfirmDialog, confirm] = useConfirm(
     "Delete Message",
@@ -86,11 +90,11 @@ export const Message = ({
 
   const { mutate: updateMessage, isPending: isUpdatingMessage } = useUpdateMessage();
   const { mutate: removeMessage, isPending: isRemovingMessage } = useRemoveMessage();
-  const { mutate: toggleReaction, isPending: isTogglingReaction } = useToggleReaction();
+  const { mutate: toggleReaction, isPending: isTogglingReaction } = useToggleReaction(); // Crea/elimina una reacción de un miembro a un mensaje específico
 
   const isPending = isUpdatingMessage;
 
-  const handleUpdate = ({ body }: { body: string }) => {
+  const handleUpdate = ({ body }: { body: string }) => {         // Actualiza el mensaje con el nuevo contenido
     updateMessage({ id, body }, {
       onSuccess: () => {
         toast.success("Message updated");
@@ -102,7 +106,7 @@ export const Message = ({
     });
   }
 
-  const handleRemove = async() => {
+  const handleRemove = async() => {                              // Elimina el mensaje actual
     const ok = await confirm();
     if (!ok) return;
 
@@ -120,7 +124,7 @@ export const Message = ({
     })
   }
 
-  const handleReaction = (value:string) => {
+  const handleReaction = (value:string) => {                     // Alterna la reacción especificada en el mensaje actual
     toggleReaction({messageId: id, value},{
       onError: () => {
         toast.error("Failed to toggle reaction")
@@ -176,10 +180,10 @@ export const Message = ({
             <Toolbar
               isAuthor={isAuthor}
               isPending={isPending}
-              handleEdit={() => setEditingId(id)} // Establece el estado editingId en el mensaje actual -> MessageList (isEditing={editingId === message._id}) -> Message renderizara o no el éditor
-              handleThread={() => onOpenMessage(id)}
-              handleDelete={handleRemove}
-              handleReaction={handleReaction}
+              handleEdit={() => setEditingId(id)}     // Establece el estado editingId en el mensaje actual -> MessageList (isEditing={editingId === message._id}) -> Message renderizara o no el éditor
+              handleThread={() => onOpenMessage(id)}  // Actualiza el valor de parentMessageId en la Url -> Toolbar -> Layout muestra o no el panel de threads
+              handleDelete={handleRemove}             // Elimina el mensaje actual
+              handleReaction={handleReaction}         // Alterna la reacción especificada en el mensaje actual
               hidethreadButton={hideThreadButton}
             />
           )}
