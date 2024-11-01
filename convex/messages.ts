@@ -130,6 +130,76 @@ export const remove = mutation({
 
     return args.id;
   }
+});
+
+export const getById = query({
+  args: {
+    id: v.id("messages")
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return null
+    }
+
+    const message = await ctx.db.get(args.id);                      // Se obtiene el mensaje especificado en los argumentos
+    if (!message) {
+      throw new Error("Message not found")
+    }
+
+    const member = await populateMember(ctx, message.memberId);            // Se recupera el miembro asociado al mensaje
+    if(!member){
+      return null
+    }
+
+    const user= await populateUser(ctx, member.userId);                    // Se recupera el usuario asociado al miembro
+    if(!user){
+      return null
+    }
+
+    const reactions = await populateReactions(ctx, message._id);           // Se recuperan las reacciones asociadas al mensaje
+
+    const reactionsWithCounts = reactions.map((reaction) => {              // Cuenta cuántas veces aparece cada tipo de reacción. 
+      return {
+        ...reaction,
+        count: reactions.filter((r) => r.value === reaction.value).length, // Esto crea duplicados en los conteos de los values 
+      }
+    });
+
+    const dedupedReactions = reactionsWithCounts.reduce(                   // Se procede a eliminar los duplicados
+      (acc, reaction) => {
+        const existingReaction = acc.find(                              // 1. Busca si ya existe una reacción con el mismo valor (emoji)
+          (r) => r.value === reaction.value                             // Dentro del acc se busca un value que = reaction que se itera
+        );
+
+        if (existingReaction) {                                         // 2. Si existe, actualiza la lista de memberIds          
+          existingReaction.memberIds = Array.from(                      // creando un nuevo array
+            new Set([...existingReaction.memberIds, reaction.memberId]) // donde solo se actualiza la lista de los membersIds que dieron el mismo value
+          )
+        } else {
+          acc.push({ ...reaction, memberIds: [reaction.memberId] })     // 3. Si no existe, añade la nueva reacción
+        }
+
+        return acc // Se devuelve el acc correspondiente a las reacciones sin duplicados
+      },
+      [] as (Doc<"reactions"> & {
+        count: number;
+        memberIds: Id<"members">[]
+      })[]
+    );
+
+    const reactionsWithoutMemberIdProperty = dedupedReactions.map(         // Finalmente, se eliminan los memberId individuales ya que ya tenemos la lista completa en memberIds rdo de la deduplicación
+      ({ memberId, ...rest }) => rest
+    );
+
+    return {                                                               // Se devuelve el mensaje completo y sus propiedades
+      ...message,
+      image: message.image ? await ctx.storage.getUrl(message.image) : undefined,
+      user,
+      member,
+      reactions: reactionsWithoutMemberIdProperty
+    }
+  }
 })
 
 export const get = query({ // Endpoint para manejar la recuperación de mensajes en diferentes contextos (por canal, conversación o mensajes en un hilo)

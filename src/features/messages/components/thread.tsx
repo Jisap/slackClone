@@ -11,7 +11,7 @@ interface ThreadProps {
 export const Thread = ({ messageId, onClose }: ThreadProps) => {
   return (
     <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center p-4 border-b">
+      <div className="flex justify-between items-center px-4  h-[49px] border-b">
         <p className="text-lg font-bold">Thread</p>
         <Button 
           onClick={onClose}
