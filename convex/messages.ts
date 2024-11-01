@@ -144,6 +144,8 @@ export const getById = query({
       return null
     }
 
+    // message -> [userId - currentMember - member - user] -> reactions -> { message + user + member + reactions } 
+
     const message = await ctx.db.get(args.id);                             // Se obtiene el mensaje especificado en los argumentos
     if (!message) {
       throw new Error("Message not found")
@@ -154,12 +156,12 @@ export const getById = query({
       return null                                                            // Se trata de verificar la membresía de un usuario en un espacio de trabajo específico.
     }
 
-    const member = await populateMember(ctx, message.memberId);            // Se recupera el miembro asociado (el que lo creo) al mensaje
+    const member = await populateMember(ctx, message.memberId);            // Se recupera toda la información del member asociado al mensaje (creador)
     if(!member){
       return null
     }
 
-    const user= await populateUser(ctx, member.userId);                    // Se recupera el usuario asociado al miembro
+    const user= await populateUser(ctx, member.userId);                    // Se recupera el usuario asociado al miembro 
     if(!user){
       return null
     }
