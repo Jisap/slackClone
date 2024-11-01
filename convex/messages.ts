@@ -64,16 +64,18 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => { // 
 }
 
 const getMember = async( // Busca un registro específico utilizando el ID del workspace y el ID del usuario dentro de la tabla members
-  ctx: QueryCtx,
+  ctx: QueryCtx,         // Verifica la membresía de un usuario en un espacio de trabajo específico. 
   workspaceId: Id<"workspaces">,
   userId: Id<"users">
 ) => {
   return ctx.db
     .query("members")
     .withIndex("by_workspace_id_user_id", (q) =>
-      q.eq("workspaceId", workspaceId).eq("userId", userId)
+      q
+        .eq("workspaceId", workspaceId) // Filtra los registros donde workspaceId coincide con el ID de workspace especificado.
+        .eq("userId", userId)           // Filtra los registros donde userId coincide con el ID del usuario especificado.
     )
-    .unique();
+    .unique(); // se espera obtener un único resultado de la consulta. Si no existe un registro único que coincida con los criterios especificados, podría lanzar un error o devolver null.
 }
 
 export const update = mutation({
@@ -142,12 +144,17 @@ export const getById = query({
       return null
     }
 
-    const message = await ctx.db.get(args.id);                      // Se obtiene el mensaje especificado en los argumentos
+    const message = await ctx.db.get(args.id);                             // Se obtiene el mensaje especificado en los argumentos
     if (!message) {
       throw new Error("Message not found")
     }
 
-    const member = await populateMember(ctx, message.memberId);            // Se recupera el miembro asociado al mensaje
+    const currentMember = await getMember(ctx, message.workspaceId, userId); // Se busca el miembro actual (logueado) que intenta acceder al mensaje
+    if (!currentMember ) {                                                   // Si no es el miembro actual, se devuelve null
+      return null                                                            // Se trata de verificar la membresía de un usuario en un espacio de trabajo específico.
+    }
+
+    const member = await populateMember(ctx, message.memberId);            // Se recupera el miembro asociado (el que lo creo) al mensaje
     if(!member){
       return null
     }
