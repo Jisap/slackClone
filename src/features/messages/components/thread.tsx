@@ -5,6 +5,7 @@ import { useGetMessage } from "../api/use-get-message";
 import { Message } from "@/components/Message";
 import { useCurrentMember } from "@/features/members/api/use-current-member";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
+import { useState } from "react";
 
 
 
@@ -19,6 +20,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
   const { data: currentMember } = useCurrentMember({ workspaceId })                      // Query para obtener el miembro actualmente logueado del workspace
   const { data: message, isLoading: loadingMessage } = useGetMessage({ id: messageId }); // Obtenemos el mensaje y sus props asociadas (user, member, image,reactions)
 
+  const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
 
   if(loadingMessage){
     return (
@@ -87,8 +89,8 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
             updatedAt={message.updatedAt}
             id={message._id}
             reactions={message.reactions}
-            isEditing={false}
-            setEditingId={() => {}}
+            isEditing={editingId === message._id} // Cuando en el toolbar se da al btn de editar -> setEditingId(id) -> Si es = message._id que se renderiza en thread -> Editor
+            setEditingId={setEditingId}
             isCompact={false}
             />
         )}
