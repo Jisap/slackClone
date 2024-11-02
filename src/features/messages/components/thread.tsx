@@ -12,6 +12,8 @@ import { useGenerateUploadUrl } from "@/features/upload/api/use-generate-upload-
 import { useCreateMessage } from "../api/use-create-message";
 import { useChannelId } from "@/hooks/use-channel-id";
 import { toast } from "sonner";
+import { useGetMessages } from "../api/use-get-messages";
+import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 
 
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
@@ -30,9 +32,12 @@ type CreateMessageValues = {
   image: Id<"_storage"> | undefined;
 }
 
+const TIME_THRESHOLD = 5;
+
 export const Thread = ({ messageId, onClose }: ThreadProps) => {
 
   const channelId = useChannelId()
+  const workspaceId = useWorkspaceId();                                                  // Query para obtener el workspaceId según la url
 
   const [editorKey, setEditorKey] = useState(0);
   const [isPending, setIsPending] = useState(false);
@@ -42,9 +47,15 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
   const { mutate: generateUploadUrl } = useGenerateUploadUrl();
   const { mutate: createMessage } = useCreateMessage();
 
-  const workspaceId = useWorkspaceId();                                                  // Query para obtener el workspaceId según la url
   const { data: currentMember } = useCurrentMember({ workspaceId })                      // Query para obtener el miembro actualmente logueado del workspace
   const { data: message, isLoading: loadingMessage } = useGetMessage({ id: messageId }); // Obtenemos el mensaje y sus props asociadas (user, member, image,reactions)
+  const { results, status, loadMore} = useGetMessages({                                  // hook para obtener los mensajes asociados al hilo
+    channelId, 
+    parentMessageId: messageId 
+  });
+
+  const canLoadMore = status === "CanLoadMore";
+  const isLoadingMore = status === "LoadingMore";
 
   const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
 
@@ -94,9 +105,38 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
       setIsPending(false);
       editorRef?.current?.enable(true);                                // Habilitamos el editor para que se actualicen los valores del editor
     }
+  };
+
+  const groupedMessages = results?.reduce( // Mensajes agrupados por fechas
+    (groups, message) => {
+      const date = new Date(message._creationTime);
+      const dateKey = format(date, "yyyy-MM-dd");
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].unshift(message); // Agrega el mensaje actual al principio del arreglo de esa fecha.
+      return groups;                    // Devuelve un objeto con las fechas como claves y los mensajes como valores
+    },
+    {} as Record<string, typeof results>
+  )
+
+  //{
+  //  "2024-11-01": [/* mensajes del 1 de noviembre de 2024 */],
+  //  "2024-11-02": [/* mensajes del 2 de noviembre de 2024 */],
+  //}
+
+  const formatDateLabel = (dateStr: string) => {
+    const date = new Date(dateStr);
+    if (isToday(date)) return "Today";
+    if (isYesterday(date)) return "Yesterday";
+    return format(date, "EEEE, MMMM d");
   }
 
-  if(loadingMessage){
+
+  
+
+
+  if(loadingMessage || status === "LoadingFirstPage"){
     return (
       <div className="h-full flex flex-col">
         <div className="flex justify-between items-center px-4  h-[49px] border-b">
@@ -149,7 +189,55 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
           <XIcon className="size-5 stroke-[1.5]"/>
         </Button>
       </div>
-      <div>
+      <div className="flex-1 flex flex-col-reverse pb-4 overflow-y-auto messages-scrollbar">
+        {/* Aquí se mostrarán los mensajes agrupados por fechas en Thread component */}
+        {
+          Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (
+            <div key={dateKey}>
+              <div className="text-center my-2 relative">
+                <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
+                <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
+                  {formatDateLabel(dateKey)}
+                </span>
+              </div>
+              {messages.map((message, index) => {
+
+                const prevMessage = messages[index - 1];
+                const isCompact =                                   // booleano que indica si los mensajes son "compactos" o no
+                  prevMessage &&                                    // si hay un mensaje anterior y    
+                  prevMessage.user?._id === message.user?._id &&    // si el mensaje anterior pertenece al mismo usuario que crea el último mensaje
+                  differenceInMinutes(                              // se comprueba que la diferencia de tiempo entre ambos mensajes es menor a TIME_THRESHOLD.
+                    new Date(message._creationTime),
+                    new Date(prevMessage._creationTime)
+                  ) < TIME_THRESHOLD;                               // Si las condiciones se cumplen se devuelve true -> isCompact = true
+
+                return (
+                  <Message
+                    key={message._id}
+                    id={message._id}
+                    memberId={message.memberId}
+                    authorImage={message.user.image}
+                    authorName={message.user.name}
+                    isAuthor={message.memberId === currentMember?._id}
+                    reactions={message.reactions}
+                    body={message.body}
+                    image={message.image}
+                    updatedAt={message.updatedAt}
+                    createdAt={message._creationTime}
+                    isEditing={editingId === message._id}
+                    setEditingId={setEditingId}
+                    isCompact={isCompact}
+                    hideThreadButton
+                    threadCount={message.threadCount}
+                    threadImage={message.threadImage}
+                    threadTimestamp={message.threadTimestamp}
+                  />
+                )
+              })}
+            </div>
+          ))
+        }
+        
         {message && (
           <Message 
             hideThreadButton
