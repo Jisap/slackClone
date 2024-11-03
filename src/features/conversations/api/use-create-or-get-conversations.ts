@@ -1,14 +1,14 @@
 import { useMutation } from "convex/react"
 import { api } from "../../../../convex/_generated/api"
 import { useCallback, useMemo, useState } from "react"
-import { Doc, Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 
 type RequestType = {                                    // Tipado de los argumentos de la mutation de convex
   workspaceId: Id<"workspaces">,
   memberId: Id<"members">
 };   
-type ResponseType = Doc<"conversations"> | null;        // Tipado de respuesta esperado (un Doc de conversations o null).
+type ResponseType = Id<"conversations"> | null;        // Tipado de respuesta esperado (un Doc de conversations o null).
 
 type Options = {                                        // Tipado de la funciones que se pueden pasar tras ejecutar la mutación, definidas en el modal
   onSuccess?: (data: ResponseType) => void;

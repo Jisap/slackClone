@@ -46,8 +46,8 @@ export const createOrGet = mutation({  // Mutación que maneja la creación o re
       .unique();
 
     if (existingConversation) {                                        // Si encuentra una conversación existente, la retorna
-        return existingConversation;
-      }
+        return existingConversation._id;
+    }
 
       const conversationId = await ctx.db.insert("conversations", {    // Si no encuentra una conversación existente, se crea una nueva
         workspaceId: args.workspaceId,
@@ -55,12 +55,8 @@ export const createOrGet = mutation({  // Mutación que maneja la creación o re
         memberTwoId: otherMember._id,
       });
 
-      const conversation = await ctx.db.get(conversationId);           // Se recupera la conversación recién creada
+      
 
-      if(!conversation){
-        throw new Error("Conversation not found");
-      }
-
-      return conversation;                                             // Se retorna la conversación recién creada
+      return conversationId;                                             // Se retorna la conversación recién creada
   }
 })
