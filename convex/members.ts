@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Id } from "./_generated/dataModel";
+import { UserButton } from '../src/features/auth/components/user-button';
 
 
 const populateUser = (ctx: QueryCtx, id: Id<"users">) => {                  // Función para obtener un usuario de la base de datos
@@ -69,5 +70,42 @@ export const get = query({                                                   // 
     }
 
     return members;
+  }
+})
+
+export const getById = query({                                               // Query para obtener un miembro por su ID
+  
+  args: { id: v.id("members") },
+  handler: async(ctx, args) => {
+    
+    const userId = await getAuthUserId(ctx);                                // Comprueba que el usuario está autenticado.
+    if (!userId) {
+      return null;
+    }
+
+    const member = await ctx.db.get(args.id);                               // Obtiene el miembro directamente por su ID
+    if (!member) {
+      return null;
+    }
+
+    const currentMember = await ctx.db                                      // Comprueba que el miembro esté en el workspace
+      .query("members")
+      .withIndex("by_workspace_id_user_id",
+        (q) => q.eq("workspaceId", member.workspaceId).eq("userId", userId))
+      .unique()
+
+    if (!currentMember) {
+      return null;
+    }
+
+    const user = await populateUser(ctx, member.userId);                    // Obtiene el usuario asociado al miembro
+    if (!user) {
+      return null;
+    }
+
+    return {                                                                // Devuelve el miembro con su usuario asociado
+      ...member,
+      user,
+    }
   }
 })
