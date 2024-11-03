@@ -10,11 +10,13 @@ import { useGetMembers } from "@/features/members/api/use-get-members";
 import { UserItem } from "./user-item";
 import { useCreateChannelModal } from "@/features/channels/store/use-create-channel-modal";
 import { useChannelId } from "@/hooks/use-channel-id";
+import { useMemberId } from "@/hooks/use-member-id";
 
 
 
 export const WorkspaceSidebar = () => {
 
+  const memberId = useMemberId();
   const channelId = useChannelId();                          // Obtenemos el id del chanel contenido en los params
   const workspaceId = useWorkspaceId();                      // Obtenemos el id del workspace contenido en los params
   
@@ -102,6 +104,7 @@ export const WorkspaceSidebar = () => {
             id={item._id}
             label={item.user.name}
             image={item.user.image}
+            variant={item._id === memberId ? "active" : "default"} // Si estamos en la página de un channel añadimos la clase active
           />
         ))}
       </WorkspaceSection>
