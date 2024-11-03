@@ -13,16 +13,17 @@ const Editor = dynamic(() => import('@/components/editor'), { ssr: false }); // 
 
 interface ChatInputProps {
   placeholder?: string;
+  conversationId: Id<'conversations'>;
 }
 
 type CreateMessageValues = {
-  channelId: Id<"channels">;
+  conversationId: Id<'conversations'>;
   workspaceId: Id<"workspaces">;
   body: string;
   image: Id<"_storage"> | undefined;
 }
 
-export const ChatInput = ({ placeholder }: ChatInputProps) => {
+export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
 
   const [editorKey, setEditorKey] = useState(0);
   const [isPending, setIsPending] = useState(false);
@@ -30,7 +31,6 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
   const editorRef = useRef<Quill | null>(null);
 
   const workspaceId = useWorkspaceId();
-  const channelId = useChannelId();
 
   const { mutate: generateUploadUrl } = useGenerateUploadUrl();
   const { mutate: createMessage } = useCreateMessage();
@@ -42,7 +42,7 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
       editorRef?.current?.enable(false);               // Deshabilitamos el editor para evitar que se actualicen los valores del editor
       
       const values: CreateMessageValues = {            // Valores que el mensaje debe tener
-        channelId,
+        conversationId,
         workspaceId,
         body,
         image: undefined

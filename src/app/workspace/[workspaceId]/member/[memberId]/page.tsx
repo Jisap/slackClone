@@ -49,7 +49,7 @@ const MemberIdPage = () => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <Conversation id={conversationId} />
     </div>
   )
