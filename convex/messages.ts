@@ -2,9 +2,8 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Doc, Id } from "./_generated/dataModel";
-import { timeStamp } from "console";
 import { paginationOptsValidator } from "convex/server";
-import { existsSync } from "fs";
+
 
 const populateUser = (ctx: QueryCtx, userId: Id<"users">) => { // Busca un registro específico utilizando el ID proporcionado.
   return ctx.db.get(userId)
@@ -34,6 +33,7 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => { // 
       count: 0,
       image: undefined,
       timeStamp: 0,
+      name: "",
     }
   }
 
@@ -49,6 +49,7 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => { // 
       count: 0,
       image: undefined,
       timeStamp: 0,
+      name: "",
     }
   }
 
@@ -57,9 +58,10 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => { // 
   
   // 7. Retorna la cantidad de mensajes, la imagen del usuario que escribió el último mensaje, y el timestamp del último mensaje
   return {
-    count: messageId.length,
+    count: messages.length,
     image: lastMessageUser?.image,
-    timeStamp: lastMessages._creationTime
+    timeStamp: lastMessages._creationTime,
+    name: lastMessageUser?.name,
   }
 }
 
@@ -311,7 +313,7 @@ export const get = query({ // Endpoint para manejar la recuperación de mensajes
             const reactionsWithoutMemberIdProperty = dedupedReactions.map(      // Finalmente, se eliminan los memberId individuales ya que ya tenemos la lista completa en memberIds rdo de la deduplicación
               ({memberId, ...rest}) => rest
             )
-
+          console.log('thread.count',thread.count);
             return {
               ...message,
               image,
@@ -319,6 +321,7 @@ export const get = query({ // Endpoint para manejar la recuperación de mensajes
               reactions: reactionsWithoutMemberIdProperty,
               threadCount: thread.count,
               threadImage: thread.image,
+              threadName: thread.name,
               threadTimestamp: thread.timeStamp
             }
           })
