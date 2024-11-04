@@ -7,6 +7,7 @@ import { use, useState } from "react";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { useCurrentMember } from "@/features/members/api/use-current-member";
 import { Loader } from "lucide-react";
+import { ConversationHero } from "./conversationHero";
 
 const TIME_THRESHOLD = 5; // Representa el umbral de tiempo máximo entre dos mensajes consecutivos para considerarlos "compactos"
                           // (es decir, que pertenezcan a la misma "burbuja de conversación").
@@ -154,6 +155,14 @@ export const MessageList = ({
         creationTime={channelCreationTime}
       />
      )}
+
+
+      {variant === "conversation" && memberName && memberImage && (
+        <ConversationHero
+          name={memberName}
+          image={memberImage}
+        />
+      )}
     </div>
   )
 }
