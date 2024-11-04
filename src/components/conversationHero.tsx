@@ -6,11 +6,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 
 interface ConversationHeroProps {
-  name: string;
-  image: string;
+  name?: string;
+  image?: string;
 }
 
-export const ConversationHero = ({ name, image}: ConversationHeroProps) => {
+export const ConversationHero = ({ name="Member", image }: ConversationHeroProps) => {
 
   const avatarFallback = name.charAt(0).toUpperCase();
 

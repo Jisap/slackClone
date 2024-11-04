@@ -157,7 +157,7 @@ export const MessageList = ({
      )}
 
 
-      {variant === "conversation" && memberName && memberImage && (
+      {variant === "conversation"  && (
         <ConversationHero
           name={memberName}
           image={memberImage}
