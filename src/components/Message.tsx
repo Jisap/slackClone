@@ -83,7 +83,8 @@ export const Message = ({
   const { 
     onOpenMessage,                                                 // Actualiza el valor de parentMessageId en la Url
     onClose,                                                       // Establece el parentMessageId en null -> layout -> cierra el panel de threads
-    parentMessageId                                                // Obtiene el valor de parentMessageId desde la url -> layout -> muestra el panel de threads
+    parentMessageId,                                               //Obtiene el valor de parentMessageId desde la url -> layout -> muestra el panel de threads
+    onOpenProfile,
   } = usePanel();                      
 
   const [ConfirmDialog, confirm] = useConfirm(
@@ -95,7 +96,7 @@ export const Message = ({
   const { mutate: removeMessage, isPending: isRemovingMessage } = useRemoveMessage();
   const { mutate: toggleReaction, isPending: isTogglingReaction } = useToggleReaction(); // Crea/elimina una reacción de un miembro a un mensaje específico
 
-  const isPending = isUpdatingMessage;
+  const isPending = isUpdatingMessage || isTogglingReaction;
 
   const handleUpdate = ({ body }: { body: string }) => {         // Actualiza el mensaje con el nuevo contenido
     updateMessage({ id, body }, {
@@ -214,7 +215,7 @@ export const Message = ({
         isRemovingMessage && "bg-rose-500/50 transform transition-all scale-y-0 origin-bottom duration-200"
       )}>
         <div className="flex items-start gap-2">
-          <button>
+          <button onClick={() => onOpenProfile(memberId)}>
             <Avatar>
               <AvatarImage 
                 src={authorImage} 
@@ -238,7 +239,7 @@ export const Message = ({
             <div className="flex flex-col w-full overflow-hidden">
               <div className="text-sm">
                 <button 
-                  onClick={() => {}}  
+                  onClick={() => onOpenProfile(memberId)}  
                   className="font-bold text-primary hover:underline"
                 >
                   {authorName}
