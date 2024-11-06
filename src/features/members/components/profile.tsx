@@ -1,10 +1,15 @@
 import { Id } from "convex/_generated/dataModel"
 import { useGetMember } from "../api/use-get-member"
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, Loader, MailIcon, XIcon } from "lucide-react"
+import { AlertTriangle, ChevronDownIcon, Loader, MailIcon, XIcon } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
+import { useUpdate } from "react-use"
+import { useUpdateMember } from "../api/use-update-message"
+import { useRemoveMember } from "../api/use-remove-member"
+import { useCurrentMember } from "../api/use-current-member"
+import { useWorkspaceId } from "@/hooks/use-workspace-id"
 
 
 interface ProfileProps {
@@ -14,9 +19,15 @@ interface ProfileProps {
 
 export const Profile = ({ memberId, onClose }: ProfileProps) => {
 
+  const workspaceId = useWorkspaceId(); 
+  const { data: currentMember, isLoading: isLoadinCurrentMember } = useCurrentMember({workspaceId}); // Nos permite saber si el usuario logueado pertenece al workspace
+
   const { data: member, isLoading: isLoadingMember } = useGetMember({ id: memberId });
 
-  if (isLoadingMember) {
+  const { mutate: updateMember, isPending: isUpdatingMember } = useUpdateMember()
+  const { mutate: removeMember, isPending: isRemovingMember } = useRemoveMember()
+
+  if (isLoadingMember || isLoadinCurrentMember) {
     return (
       <div className="h-full flex flex-col">
         <div className="flex justify-between items-center px-4  h-[49px] border-b">
@@ -81,6 +92,18 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
         </div>
         <div className="flex flex-col p-4">
           <p className="text-xl font-bold">{member.user.name}</p>
+          {currentMember?.role === "admin" &&                           // Si el miembro actual es admin,
+            currentMember._id !== member._id ? (                        // y es distinto al miembro que se pasa por argumentos -> se muestra el boton de cambiar el rol
+              <div className="flex items-center gap-2 mt-4">
+                <Button variant="outline" className="w-full capitalize">
+                  {member.role} <ChevronDownIcon className="size-4" />
+                </Button>
+                <Button variant="outline" className="w-full">
+                  Remove
+                </Button>
+              </div>
+            ) : null
+          }
         </div>
         <Separator />
         <div className="flex flex-col p-4">

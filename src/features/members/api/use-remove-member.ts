@@ -48,7 +48,7 @@ export const useRemoveMember = () => { // Hook para borrar un member de la bd
       if (options?.throwError) {                     // Si throwError=true  se lanza un throw error que será recogido por el catch del modal al usar la mutation
         throw error;
       }
-    } finally {                                        // Finalmente, se ejecuta la función de onSettled definida en el modal
+    } finally {                                      // Finalmente, se ejecuta la función de onSettled definida en el modal
       setStatus("settled")
       options?.onSettled?.()
     }
