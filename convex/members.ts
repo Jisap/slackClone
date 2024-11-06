@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, QueryCtx } from "./_generated/server";
+import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Id } from "./_generated/dataModel";
 import { UserButton } from '../src/features/auth/components/user-button';
@@ -108,4 +108,39 @@ export const getById = query({                                               // 
       user,
     }
   }
+})
+
+export const update = mutation({
+  args: {
+    id: v.id("members"),
+    role: v.union(v.literal("admin"), v.literal("member")),
+  },
+  
+  handler: async(ctx, args) => {
+    const userId = await getAuthUserId(ctx);                                // Comprueba que el usuario está autenticado.
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const member = await ctx.db.get(args.id);                               // Obtiene el miembro directamente por su ID
+    if (!member) {
+      throw new Error("Member not found");
+    }
+
+    const currentMember = await ctx.db                                      // Comprueba que el miembro esté en el workspace
+      .query("members")
+      .withIndex("by_workspace_id_user_id",
+        (q) => q.eq("workspaceId", member.workspaceId).eq("userId", userId))
+      .unique()
+
+    if(!currentMember || currentMember.role !== "admin"){
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.id, { role: args.role });                       // Actualiza el role del memeber
+    
+    return args.id
+  }
+
+
 })
