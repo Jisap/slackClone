@@ -141,6 +141,74 @@ export const update = mutation({
     
     return args.id
   }
+})
 
+export const remove = mutation({
+  args: {
+    id: v.id("members"),
+  },
 
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);                                // Comprueba que el usuario está autenticado.
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const member = await ctx.db.get(args.id);                               // Obtiene el miembro directamente por su ID
+    if (!member) {
+      throw new Error("Member not found");
+    }
+
+    const currentMember = await ctx.db                                      // Comprueba que el miembro esté en el workspace
+      .query("members")
+      .withIndex("by_workspace_id_user_id",
+        (q) => q.eq("workspaceId", member.workspaceId).eq("userId", userId))
+      .unique()
+
+    if (!currentMember ) {                                                  // Si el member no pertenece al workspace -> error
+      throw new Error("Unauthorized");
+    }
+
+    if(member.role === "admin") {                                           // Si el member es admin -> error porque no puede ser removido
+      throw new Error("Admin cannot be removed");
+    }
+
+    if(currentMember._id === args.id && currentMember.role === "admin"){    // Si el member del actual workspace es el member a eliminar y es ademas admin -> error
+      throw new Error("Cannot remove self if self is an admin");
+    }
+
+    const  [messages, reactions, conversations] = await Promise.all([       // Se consultan las entradas de las tablas messages, reactions y conversations
+      ctx.db
+        .query("messages")
+        .withIndex("by_member_id", (q) => q.eq("memberId", member._id))     // que esten relacionadas con el member
+        .collect(),
+       ctx.db
+        .query("reactions")
+        .withIndex("by_member_id", (q) => q.eq("memberId", member._id))
+        .collect(),
+      ctx.db
+        .query("conversations")
+        .filter((q) => q.or(
+          q.eq(q.field("memberOneId"), member._id),
+          q.eq(q.field("memberTwoId"), member._id),
+        ))
+        .collect()
+    ])
+
+    for(const message of messages){                                         // Cada uno de esos datos se eleminan con un bucle for
+      await ctx.db.delete(message._id)
+    }
+
+    for(const reaction of reactions){
+      await ctx.db.delete(reaction._id)
+    }
+
+    for(const conversation of conversations){
+      await ctx.db.delete(conversation._id)
+    }
+
+    await ctx.db.delete(args.id,);                                          // finalmente se elimina el propio member utilizando su args.id.
+
+    return args.id
+  }
 })
