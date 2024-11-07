@@ -5,13 +5,23 @@ import { AlertTriangle, ChevronDownIcon, Loader, MailIcon, XIcon } from "lucide-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import { useUpdate } from "react-use"
+
 import { useUpdateMember } from "../api/use-update-message"
 import { useRemoveMember } from "../api/use-remove-member"
 import { useCurrentMember } from "../api/use-current-member"
 import { useWorkspaceId } from "@/hooks/use-workspace-id"
 import { toast } from "sonner"
 import { useConfirm } from "@/hooks/use-confirm"
+import { useRouter } from "next/navigation"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu"
+
 
 
 interface ProfileProps {
@@ -20,6 +30,8 @@ interface ProfileProps {
 }
 
 export const Profile = ({ memberId, onClose }: ProfileProps) => {
+
+  const router = useRouter();
 
   const workspaceId = useWorkspaceId(); 
 
@@ -51,6 +63,7 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
 
     removeMember({ id: memberId },{
       onSuccess: () => {
+        router.replace("/");
         toast.success("Member removed successfully");
         onClose();
       },
@@ -164,9 +177,26 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
             {currentMember?.role === "admin" &&                            // Si el miembro actual (logueado y pertenece al workspace) es admin,
               currentMember?._id !== member._id ? (                        // y es distinto al miembro que se pasa por argumentos -> se muestra el boton de cambiar el rol
                 <div className="flex items-center gap-2 mt-4">
-                  <Button variant="outline" className="w-full capitalize">
-                    {member.role} <ChevronDownIcon className="size-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full capitalize">
+                        {member.role} <ChevronDownIcon className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-full">
+                      <DropdownMenuRadioGroup 
+                        value={member.role}
+                        onValueChange={(role) => onUpdate(role as "admin" | "member")}
+                      >
+                        <DropdownMenuRadioItem value="admin">
+                          Admin
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="member">
+                          Member
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <Button 
                     variant="outline" 
                     className="w-full"
