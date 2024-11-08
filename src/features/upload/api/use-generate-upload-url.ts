@@ -28,7 +28,7 @@ export const useGenerateUploadUrl = () => { // Hook para subir una imagen a conv
 
   const mutation = useMutation(api.upload.generateUploadUrl) // Definición de la mutation de la api de convex para subir una imagen a convex
 
-  const mutate = useCallback(async(_values:{}, options?: Options) => { // Ejecución de la mutation -> callbacks
+  const mutate = useCallback(async( options?: Options) => { // Ejecución de la mutation -> callbacks
     try {
       
       setData(null);

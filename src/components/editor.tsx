@@ -11,6 +11,9 @@ import { cn } from '@/lib/utils';
 import { EmojiPopover } from './emoji-popover';
 import Image from 'next/image';
 
+type Emoji = {
+  native: string;
+};
 
 type EditorValue = {
   image: File | null;
@@ -149,7 +152,7 @@ const Editor = ({
 
   }
 
-  const onEmojiSelect = (emoji:any) => {                                   // Función para la selección de un emoji 
+  const onEmojiSelect = (emoji:Emoji) => {                                 // Función para la selección de un emoji 
     const quill = quillRef.current;                                        // Obtiene la instancia de Quill desde la ref
     quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);    // inserta el emoji en la posición actual del cursor. 
   }
