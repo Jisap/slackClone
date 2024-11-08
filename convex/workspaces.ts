@@ -173,15 +173,53 @@ export const remove= mutation({
       throw new Error("Unauthorized");
     }
 
-    const [members] = await Promise.all([                                    // Si es miembro se obtienen todos los miembros del workspace
+    const [
+      members, 
+      channels, 
+      conversations, 
+      messages, 
+      reactions
+    ] = await Promise.all([     // Si es miembro se obtienen todos los miembros del workspace, los channels, conversaciones, mensajes y reacciones
       ctx.db
         .query("members")                                                    // Para ello se consulta a la tabla de members
         .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.id))   // con un índice de combinaciónes de workspaceId
-        .collect()                                                           // donde el workspaceId=args.id 
+        .collect(),                                                          // donde el workspaceId=args.id 
+      ctx.db
+        .query("channels")                                                    
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.id))   // idem
+        .collect(),
+      ctx.db
+        .query("conversations")                                                    
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.id))   // idem
+        .collect(),
+      ctx.db
+        .query("messages")                                                   // idem
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.id))    
+        .collect(),
+      ctx.db
+        .query("reactions")                                                  // idem
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.id))    
+        .collect()      
     ])                                                                       
 
     for (const member of members) {                                          // Se iteran todos los miembros del workspace
       await ctx.db.delete(member._id)                                        // y se borran sus registros de la tabla de members
+    }
+
+    for (const channel of channels) {                                         
+      await ctx.db.delete(channel._id)                                        
+    }
+
+    for (const conversation of conversations) {                                          
+      await ctx.db.delete(conversation._id)                                        
+    }
+
+    for (const message of messages) {                                          
+      await ctx.db.delete(message._id)                                        
+    }
+
+    for (const reaction of reactions) {                                          
+      await ctx.db.delete(reaction._id)                                        
     }
 
     await ctx.db.delete(args.id );                                           // y acontinuación se borra el workspace con el id proporcionado en los argumentos.

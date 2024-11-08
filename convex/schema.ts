@@ -26,7 +26,7 @@ const schema = defineSchema({
     name: v.string(),                                             // Nombre del channel
     workspaceId: v.id("workspaces"),
   })
-    .index("by_worspace_id", ["workspaceId"]),
+    .index("by_workspace_id", ["workspaceId"]),
 
   conversations: defineTable({
     workspaceId: v.id("workspaces"),

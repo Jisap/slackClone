@@ -27,7 +27,7 @@ export const get = query ({
 
     const channels = await ctx.db                // Si el usuario es miembro, se devuelve el array de channels
       .query("channels")                         // Consulta a la tabla de channels
-      .withIndex("by_worspace_id", (q) => 
+      .withIndex("by_workspace_id", (q) => 
         q.eq("workspaceId", args.workspaceId)    // donde el workspaceId=args.id
       )
       .collect();
@@ -134,7 +134,17 @@ export const remove = mutation({                                     // Mutació
       return new Error("Unauthorized");
     }
 
-    //TODO: Remove associated messages
+    // Remove associated messages
+    const [messages] = await Promise.all([
+      ctx.db
+        .query("messages")
+        .withIndex("by_channel_id", (q) => q.eq("channelId", args.id))
+        .collect(),
+    ]);
+
+    for (const message of messages) {
+      await ctx.db.delete(message._id);
+    }
 
     await ctx.db.delete( args.id )                                   // Si el usuario es admin o es miembro se borra el channel
 
