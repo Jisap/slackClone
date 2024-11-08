@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useState, use } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 
 
@@ -22,7 +21,7 @@ export const useConfirm = (
   } | null>(null);                                          // y null si el modal no está abierto
 
   // Funciones para manejar la promesa
-  const confirm = () => new Promise((resolve, reject) => {  // Devuelve una nueva promesa que el usuario confirma o no en el modal
+  const confirm = () => new Promise((resolve) => {          // Devuelve una nueva promesa que el usuario confirma o no en el modal
     setPromise({ resolve });                                // estableciendo su estado con la función resolve
   });
 

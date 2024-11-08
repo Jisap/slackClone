@@ -1,7 +1,5 @@
 import { formatDistanceToNow } from 'date-fns';
-import { Thread } from '../features/messages/components/thread';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { timeStamp } from 'console';
 import { ChevronRight } from 'lucide-react';
  
 interface ThreadBarProps {

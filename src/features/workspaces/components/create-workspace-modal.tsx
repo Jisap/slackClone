@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+
 } from "@/components/ui/dialog"
 import { useCreateWorkspacesModal } from "../store/use-create-workspaces-modal";
 import { Input } from "@/components/ui/input";
@@ -30,7 +30,7 @@ const CreateWorkspaceModal = () => {
     setName("")
   }
 
-  const  { mutate, isPending, isSuccess, isError, isSettled, data, error } = useCreateWorkspace(); // Hook para la creación de un workspace (data es el id del workspace creado)
+  const  { mutate, isPending } = useCreateWorkspace(); // Hook para la creación de un workspace (data es el id del workspace creado)
   
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {  // Cuando se hace submit en el formulario, se ejecuta el método mutate(name) -> data y demas props
     e.preventDefault();

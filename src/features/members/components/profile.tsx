@@ -54,8 +54,8 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
 
   const { data: member, isLoading: isLoadingMember } = useGetMember({ id: memberId });
 
-  const { mutate: updateMember, isPending: isUpdatingMember } = useUpdateMember()
-  const { mutate: removeMember, isPending: isRemovingMember } = useRemoveMember()
+  const { mutate: updateMember } = useUpdateMember()
+  const { mutate: removeMember } = useRemoveMember()
 
   const onRemove = async() => {
     const ok = await confirmRemove();
@@ -67,7 +67,7 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
         toast.success("Member removed successfully");
         onClose();
       },
-      onError: (error) => {
+      onError: () => {
         toast.error("Failed to remove member");
       }
     })
@@ -83,7 +83,7 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
         toast.success("You left the workspace");
         onClose();
       },
-      onError: (error) => {
+      onError: () => {
         toast.error("Failed to leave the workspace");
       }
     })
@@ -98,7 +98,7 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
         toast.success("Role changed successfully");
         onClose();
       },
-      onError: (error) => {
+      onError: () => {
         toast.error("Failed to change role");
       }
     })

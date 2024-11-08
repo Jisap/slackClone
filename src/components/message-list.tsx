@@ -3,7 +3,7 @@ import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import { Message } from "./Message";
 import { ChannelHero } from "./ChannelHero";
 import { Id } from "../../convex/_generated/dataModel";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { useCurrentMember } from "@/features/members/api/use-current-member";
 import { Loader } from "lucide-react";
