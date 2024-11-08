@@ -7,6 +7,7 @@ import { Loader } from "lucide-react"
 import { Header } from "./Header"
 import { ChatInput } from "./chat-input"
 import { MessageList } from "@/components/message-list"
+import { usePanel } from "@/hooks/use-panel"
 
 
 
@@ -17,6 +18,8 @@ interface ConversationProps {
 export const Conversation = ({ id }: ConversationProps) => {
 
   const memberId = useMemberId();                                                       // id desde url
+
+  const { onOpenProfile } = usePanel();                                                 // Obtiene el valor de parentMessageId desde la Url y lo almacena en el estado -> abre el panel de perfil
 
   const { data:member, isLoading: memberLoading } = useGetMember({ id: memberId });     // Devuelve el miembro con su usuario asociado según id de miembro
   const { results, status, loadMore } = useGetMessages({                                // Obtenemos los mensajes de la conversation      
@@ -36,7 +39,7 @@ export const Conversation = ({ id }: ConversationProps) => {
       <Header
         memberName={member?.user.name}
         memberImage={member?.user.image}
-        onClick={() => {}}
+        onClick={() => onOpenProfile(memberId)}
       />
       <MessageList 
         data={results}
