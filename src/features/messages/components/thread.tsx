@@ -74,7 +74,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
       }
 
       if (image) {                                                       // Si hay una imagen adjunta
-        const url = await generateUploadUrl({}, { throwError: true });   // se genera una URL de subida a convex     
+        const url = await generateUploadUrl({ throwError: true });       // se genera una URL de subida a convex     
 
         if (!url) {
           throw new Error("Url not found");
