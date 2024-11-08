@@ -1,6 +1,5 @@
 import { LucideIcon } from "lucide-react"
 import { IconType } from "react-icons/lib"
-import { Sidebar } from './sidebar';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

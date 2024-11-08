@@ -1,7 +1,7 @@
 import { useCurrentMember } from "@/features/members/api/use-current-member";
 import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
-import { AlertTriangle, HashIcon, Loader, MessageSquareText, SendHorizonal, Sidebar } from "lucide-react";
+import { AlertTriangle, HashIcon, Loader, MessageSquareText, SendHorizonal } from "lucide-react";
 import { WorkspaceHeader } from "./workspaceHeader";
 import SidebarItem from "./sidebar-Item";
 import { useGetChannels } from "@/features/channels/api/use-get-channels";
@@ -20,7 +20,7 @@ export const WorkspaceSidebar = () => {
   const channelId = useChannelId();                          // Obtenemos el id del chanel contenido en los params
   const workspaceId = useWorkspaceId();                      // Obtenemos el id del workspace contenido en los params
   
-  const [_open, setOpen] = useCreateChannelModal();          // Estado global del modal de creación de channels con atom
+  const [, setOpen] = useCreateChannelModal();               // Estado global del modal de creación de channels con atom
 
   const { 
     data: member, 
@@ -34,12 +34,12 @@ export const WorkspaceSidebar = () => {
   
   const {
     data: channels,
-    isLoading: channelsLoading,                            
+    //isLoading: channelsLoading,                            
   } = useGetChannels({ workspaceId })                       // Obtenemos los datos de los channels del workspace
 
   const { 
     data: members, 
-    isLoading: membersLoading 
+    //isLoading: membersLoading 
   } = useGetMembers({ workspaceId });                       // Obtenemos los datos de los miembros del workspace
 
   if(memberIsLoading || workspaceIsLoading) {

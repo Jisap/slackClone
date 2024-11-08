@@ -9,7 +9,7 @@ import { Loader } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { use, useEffect, useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import VerificationInput from "react-verification-input"
 import { toast } from "sonner"
 
@@ -19,7 +19,7 @@ const JoinPage = () => {
   const router = useRouter()
   const workspaceId = useWorkspaceId();                               // id del workspace
   const { data, isLoading } = useGetWorkspaceInfo({id: workspaceId}); // hook para obtener información del workspace
-  const { mutate, isPending } = useJoin()                             // hook para unir al workspace
+  const { mutate } = useJoin()                                        // hook para unir al workspace
 
   const isMember = useMemo(() => data?.isMember, [data?.isMember]);   // Memorizamos si el usuario es miembro del workspace
 

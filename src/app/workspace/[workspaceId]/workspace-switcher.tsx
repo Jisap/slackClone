@@ -9,11 +9,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useCreateWorkspace } from "@/features/workspaces/api/use-create-workspace";
 import { useCreateWorkspacesModal } from "@/features/workspaces/store/use-create-workspaces-modal";
 import { Loader, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -33,13 +30,13 @@ export const WorkspaceSwitcher = () => {
   
   const { 
     data: workspaces,
-    isLoading: workspacesLoading
+    //isLoading: workspacesLoading
   } = useGetWorkspaces();                                            // Llamamos al hook useGetWorkspaces para obtener los datos de la tabla workspaces pertenecientes al usuario logueado
 
   const filteredWorkspaces = workspaces?.filter(
     (w) => w._id !== workspaceId);                                   // Filtramos los workspaces que no son el actual (actual = esta en los params)
 
-  const [_open, setOpen] = useCreateWorkspacesModal();               // Estado global del modal de creación de workspaces con atom
+  const [, setOpen] = useCreateWorkspacesModal();                    // Estado global del modal de creación de workspaces con atom
 
   return (
     <DropdownMenu>

@@ -1,12 +1,11 @@
 import dynamic from "next/dynamic";
 import { Doc, Id } from "../../convex/_generated/dataModel"
-import { format, isToday, isYesterday, set } from "date-fns";
+import { format, isToday, isYesterday } from "date-fns";
 import { Hint } from "./hint";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Thumbnail } from "./Thumbnail";
 import { Toolbar } from "./toolbar";
 import { useUpdateMessage } from "@/features/messages/api/use-update-message";
-import { update } from '../../convex/messages';
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useRemoveMessage } from "@/features/messages/api/use-remove-message";
@@ -104,7 +103,7 @@ export const Message = ({
         toast.success("Message updated");
         setEditingId(null);
       },
-      onError: (error) => {
+      onError: () => {
         toast.error("Failed to update message");
       }
     });

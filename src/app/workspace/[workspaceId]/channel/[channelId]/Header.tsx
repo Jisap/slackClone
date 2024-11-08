@@ -3,7 +3,6 @@ import { FaChevronDown } from "react-icons/fa"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -50,9 +49,9 @@ export const Header = ({ name }: HeaderProps) => {
     setEditOpen(value);
   }
 
-  const handleEditClose = () => {
-    setEditOpen(false);
-  }
+  // const handleEditClose = () => {
+  //   setEditOpen(false);
+  // }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();

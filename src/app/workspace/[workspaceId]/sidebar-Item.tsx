@@ -1,5 +1,4 @@
 import { LucideIcon } from "lucide-react";
-import { Id } from "../../../../convex/_generated/dataModel";
 import { IconType } from "react-icons/lib";
 import { Button } from "@/components/ui/button";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";

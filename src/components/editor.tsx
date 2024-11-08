@@ -3,7 +3,7 @@ import Quill, { QuillOptions } from 'quill'
 import "quill/dist/quill.snow.css"
 import { Button } from './ui/button';
 import { PiTextAa } from 'react-icons/pi';
-import { ImageIcon, Smile, X, XIcon } from 'lucide-react';
+import { ImageIcon, Smile, XIcon } from 'lucide-react';
 import { MdSend } from 'react-icons/md';
 import { Hint } from './hint';
 import { Delta, Op } from 'quill/core';

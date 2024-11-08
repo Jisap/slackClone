@@ -3,7 +3,6 @@ import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
 import { useWorkspaceId } from "@/hooks/use-workspace-id"
 import { Info, Search } from "lucide-react"
 import {
-  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -11,13 +10,10 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command"
 import { useState } from "react";
 import { useGetChannels } from "@/features/channels/api/use-get-channels";
-import data from '@emoji-mart/data';
 import { useGetMembers } from "@/features/members/api/use-get-members";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 
@@ -63,7 +59,7 @@ export const Toolbar = () => {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Channels">
               {channels?.map((channel) => (
-                  <CommandItem onSelect={() => onChannelClick(channel._id)}> 
+                  <CommandItem onSelect={() => onChannelClick(channel._id)} key={channel._id}> 
                       {channel.name}                
                   </CommandItem>
               ))}
@@ -71,7 +67,7 @@ export const Toolbar = () => {
             <CommandSeparator />
             <CommandGroup heading="Members">
               {members?.map((member) => (
-                <CommandItem onSelect={() => onMemberClick(member._id)}>
+                <CommandItem onSelect={() => onMemberClick(member._id)} key={member._id}>
                     {member.user.name}   
                 </CommandItem>
               ))}
